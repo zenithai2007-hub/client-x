@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Home, MessageSquare, Bot, Megaphone, ListTodo, Keyboard, Brain,
   Activity, Settings, ChevronLeft, ChevronRight, Plus, X, History,
-  Zap, BarChart3,
+  Zap, BarChart3, Gift, LayoutTemplate,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { NavKey } from "@/lib/types";
@@ -28,6 +28,8 @@ const NAV: { key: NavKey; label: string; href: string; icon: LucideIcon }[] = [
   { key: "history", label: "History", href: "/history", icon: History },
   { key: "automations", label: "Automations", href: "/automations", icon: Zap },
   { key: "analytics", label: "Analytics", href: "/analytics", icon: BarChart3 },
+  { key: "referrals", label: "Referrals", href: "/referrals", icon: Gift },
+  { key: "templates", label: "Templates", href: "/templates", icon: LayoutTemplate },
   { key: "settings", label: "Settings", href: "/settings", icon: Settings },
 ];
 

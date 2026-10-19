@@ -21,6 +21,8 @@ const TITLES: Record<NavKey, string> = {
   history: "History",
   automations: "Automations",
   analytics: "Analytics",
+  referrals: "Referrals",
+  templates: "Templates",
   settings: "Settings",
 };
 

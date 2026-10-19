@@ -196,6 +196,9 @@ export interface Settings {
     readReceipts: boolean;
     onlineStatus: boolean;
   };
+  growth: {
+    attribution: boolean; // show "Made with Client X" on shared/exported content
+  };
   outreach: {
     defaultPlatform: string;
     dailyLimit: number;
@@ -226,9 +229,53 @@ export type NavKey =
   | "history"
   | "automations"
   | "analytics"
+  | "referrals"
+  | "templates"
   | "settings";
 
 /** Per-action idempotency bookkeeping kept in the state layer. */
 export interface InFlightMap {
   [actionKey: string]: string; // actionKey -> idempotency UUID
 }
+
+/* ------------------------------------------------------------------ */
+/* Growth — referrals, sharing, community templates                     */
+/* ------------------------------------------------------------------ */
+
+export interface ReferralStats {
+  invitesSent: number;
+  friendsJoined: number;
+  creditsEarned: number;
+}
+
+export interface ReferralReward {
+  id: string;
+  text: string;
+  credits: number;
+  time: string;
+}
+
+export type TemplateKind = "agent" | "style" | "outreach";
+
+export interface CommunityTemplate {
+  id: string;
+  kind: TemplateKind;
+  title: string;
+  description: string;
+  author: string;
+  uses: number;
+  rating: number; // 0–5
+  createdAt: string;
+  mine?: boolean;
+  payload: {
+    platform?: AgentPlatform;
+    instructions?: string;
+    permissions?: Record<string, boolean>;
+    tone?: string;
+    goal?: string;
+    messageStyle?: string;
+    targets?: string[];
+  };
+}
+
+export type ShareKind = "output" | "agent" | "campaign" | "template";

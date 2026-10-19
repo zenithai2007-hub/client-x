@@ -259,4 +259,5 @@ export const defaultSettings = {
   ai: { tone: "professional" as const, autoReply: false, approvalRequired: true },
   privacy: { readReceipts: true, onlineStatus: true },
   outreach: { defaultPlatform: "LinkedIn", dailyLimit: 40, delayBetween: 30 },
+  growth: { attribution: true },
 };

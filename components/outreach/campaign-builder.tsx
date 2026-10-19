@@ -19,18 +19,35 @@ const MESSAGE_STYLES = [
 const selectClass =
   "w-full rounded-xl border border-slate-200/70 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition-colors focus:border-cx-purple focus:outline-none focus:ring-2 focus:ring-cx-purple/15";
 
-export function CampaignBuilder({ onLaunched }: { onLaunched: () => void }) {
+export interface BuilderInitial {
+  name?: string;
+  platform?: string;
+  targets?: string[];
+  goal?: string;
+  tone?: string;
+  messageStyle?: string;
+}
+
+export function CampaignBuilder({
+  onLaunched,
+  initial,
+}: {
+  onLaunched: () => void;
+  initial?: BuilderInitial;
+}) {
   const createCampaign = useOutreachStore((s) => s.createCampaign);
   const startCampaign = useOutreachStore((s) => s.startCampaign);
   const isInFlight = useOutreachStore((s) => s.isInFlight);
 
-  const [name, setName] = useState("");
-  const [platform, setPlatform] = useState("LinkedIn");
-  const [targets, setTargets] = useState<string[]>(["Faisal", "Ahmad", "Hamza"]);
+  const [name, setName] = useState(initial?.name ?? "");
+  const [platform, setPlatform] = useState(initial?.platform ?? "LinkedIn");
+  const [targets, setTargets] = useState<string[]>(
+    initial?.targets?.length ? initial.targets : ["Faisal", "Ahmad", "Hamza"]
+  );
   const [draft, setDraft] = useState("");
-  const [goal, setGoal] = useState("");
-  const [tone, setTone] = useState("Professional");
-  const [messageStyle, setMessageStyle] = useState(MESSAGE_STYLES[0]);
+  const [goal, setGoal] = useState(initial?.goal ?? "");
+  const [tone, setTone] = useState(initial?.tone ?? "Professional");
+  const [messageStyle, setMessageStyle] = useState(initial?.messageStyle ?? MESSAGE_STYLES[0]);
 
   const launching = isInFlight("campaign:create");
   const cleanTargets = targets.map((t) => t.trim()).filter(Boolean);

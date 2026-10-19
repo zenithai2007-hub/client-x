@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { Agent, AgentStatus, Approval, InFlightMap } from "@/lib/types";
+import type { Agent, AgentPlatform, AgentStatus, Approval, InFlightMap } from "@/lib/types";
 import { agentService } from "@/lib/services/agent-service";
 import { uid, nowISO } from "@/lib/services/base";
 import { emitApprovalResolved } from "@/lib/approval-bus";
@@ -42,6 +42,12 @@ interface AgentState {
   ) => Promise<void>;
   logAgentActivity: (id: string, text: string) => void;
   pendingApprovals: () => Approval[];
+  createAgent: (data: {
+    name: string;
+    platform: AgentPlatform;
+    instructions: string;
+    permissions?: Record<string, boolean>;
+  }) => Promise<Agent>;
 }
 
 const agentName = (agents: Agent[], id: string) => agents.find((a) => a.id === id)?.name ?? id;
@@ -207,6 +213,45 @@ export const useAgentStore = create<AgentState>()(
       },
 
       pendingApprovals: () => get().approvals.filter((a) => a.status === "pending"),
+
+      createAgent: async (data) => {
+        const key = `agent:create:${data.name}`;
+        const started = beginAction(get().inFlight, key);
+        if (!started) {
+          // Idempotent: a create for this name is already in flight — return existing match.
+          const existing = get().agents.find((a) => a.name === data.name);
+          if (existing) return existing;
+          throw new Error("Agent creation already in progress.");
+        }
+        set({ inFlight: started.map });
+        try {
+          await agentService.fetchAgents(); // mock latency
+          const agent: Agent = {
+            id: `ag-${uid()}`,
+            name: data.name,
+            platform: data.platform,
+            status: "ready",
+            instructions: data.instructions,
+            permissions: data.permissions ?? {
+              sendMessages: false,
+              readProfile: true,
+              manageConnections: false,
+              autoApprove: false,
+            },
+            activity: [{ time: nowISO(), text: "Agent created from a community template." }],
+          };
+          set((s) => ({ agents: [agent, ...s.agents] }));
+          useActivityStore
+            .getState()
+            .logEvent("agents", `Agent "${agent.name}" created from a community template.`);
+          useNotificationStore
+            .getState()
+            .push("Agent created", `"${agent.name}" is ready in your workspace.`, "success");
+          return agent;
+        } finally {
+          set((s) => ({ inFlight: endAction(s.inFlight, key) }));
+        }
+      },
     }),
     {
       name: "clientx-agent-store",

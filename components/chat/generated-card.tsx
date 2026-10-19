@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/input";
+import { ShareButton } from "@/components/growth/share-menu";
+import { Attribution, ShareNudge } from "@/components/growth/attribution";
 import { cn } from "@/lib/cn";
 
 export function GeneratedCard({
@@ -29,6 +31,8 @@ export function GeneratedCard({
 }) {
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(text);
+  const [inserted, setInserted] = useState(false);
+  const [nudgeGone, setNudgeGone] = useState(false);
 
   const startEdit = () => {
     setEditText(text);
@@ -37,6 +41,10 @@ export function GeneratedCard({
   const saveEdit = () => {
     onSave(editText);
     setEditing(false);
+  };
+  const handleInsert = () => {
+    onInsert();
+    setInserted(true);
   };
 
   return (
@@ -100,7 +108,7 @@ export function GeneratedCard({
                 size="sm"
                 variant="primary-orange"
                 icon={<Send size={14} />}
-                onClick={onInsert}
+                onClick={handleInsert}
                 disabled={loading || !text.trim()}
               >
                 Insert
@@ -123,9 +131,22 @@ export function GeneratedCard({
               >
                 Edit
               </Button>
+              {!loading && text.trim() && (
+                <ShareButton
+                  kind="output"
+                  title={text.slice(0, 80)}
+                  sharePath={`/share/output/output?text=${encodeURIComponent(text)}&label=${encodeURIComponent(kindLabel)}`}
+                />
+              )}
             </>
           )}
         </div>
+        {inserted && !nudgeGone && (
+          <div className="mt-3" onClick={() => setNudgeGone(true)}>
+            <ShareNudge text="Love this reply?" />
+          </div>
+        )}
+        <Attribution className="mt-3" />
       </Card>
     </motion.div>
   );

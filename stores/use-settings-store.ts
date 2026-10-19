@@ -22,6 +22,7 @@ export const useSettingsStore = create<SettingsState>()(
           ai: { ...s.ai, ...patch.ai },
           privacy: { ...s.privacy, ...patch.privacy },
           outreach: { ...s.outreach, ...patch.outreach },
+          growth: { ...s.growth, ...patch.growth },
         })),
       reset: () => set({ ...structuredClone(defaultSettings) }),
     }),

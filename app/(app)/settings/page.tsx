@@ -7,6 +7,7 @@ import {
   Bell,
   Bot,
   ChevronRight,
+  Gift,
   Keyboard,
   RotateCcw,
   Sparkles,
@@ -322,6 +323,33 @@ export default function SettingsPage() {
             description="Play a sound with notifications."
             control={
               <Toggle checked={notif.sound} onChange={(v) => update({ notifications: { ...notif, sound: v } })} />
+            }
+          />
+        </SettingsSection>
+      </motion.div>
+
+      {/* ---------------- Growth ---------------- */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22, delay: 0.18 }}>
+        <SettingsSection id="growth" icon={Gift} title="Growth" description="Referrals, sharing and attribution.">
+          <SettingRow
+            label="Referral program"
+            description="Invite friends — you both earn Pro credits."
+            control={
+              <Link href="/referrals">
+                <Button size="sm" variant="secondary" icon={<ChevronRight size={14} />}>
+                  Open referrals
+                </Button>
+              </Link>
+            }
+          />
+          <SettingRow
+            label="Attribution"
+            description="Show a subtle “Made with Client X” line on shared and exported content."
+            control={
+              <Toggle
+                checked={useSettingsStore((s) => s.growth.attribution)}
+                onChange={(v) => update({ growth: { attribution: v } })}
+              />
             }
           />
         </SettingsSection>

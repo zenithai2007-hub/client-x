@@ -23,6 +23,9 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/input";
 import { VerificationCard } from "@/components/ui/verification-card";
+import { ShareButton } from "@/components/growth/share-menu";
+import { PublishModal } from "@/components/growth/publish-modal";
+import { ShareNudge } from "@/components/growth/attribution";
 import { cn } from "@/lib/cn";
 
 /* ------------------------------------------------------------------ */
@@ -299,6 +302,7 @@ export function LiveCampaign({ campaign }: { campaign: Campaign }) {
   const resumeCampaign = useOutreachStore((s) => s.resumeCampaign);
   const stopCampaign = useOutreachStore((s) => s.stopCampaign);
   const isInFlight = useOutreachStore((s) => s.isInFlight);
+  const [publishOpen, setPublishOpen] = useState(false);
 
   const total = campaign.targets.length;
   const done = campaign.targets.filter((t) => t.status === "COMPLETED").length;
@@ -356,6 +360,14 @@ export function LiveCampaign({ campaign }: { campaign: Campaign }) {
                 Stop
               </Button>
             )}
+            <ShareButton
+              kind="campaign"
+              title={campaign.name}
+              sharePath={`/share/campaign/${campaign.id}`}
+            />
+            <Button size="sm" variant="ghost" onClick={() => setPublishOpen(true)}>
+              Save as template
+            </Button>
           </div>
         </div>
 
@@ -368,9 +380,15 @@ export function LiveCampaign({ campaign }: { campaign: Campaign }) {
         </div>
 
         {campaign.status === "COMPLETED" && (
-          <div className="mt-4 flex items-center gap-2 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">
-            <CheckCircle2 size={16} />
-            Campaign completed — all targets reached a terminal state.
+          <div className="mt-4 space-y-2">
+            <div className="flex items-center gap-2 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">
+              <CheckCircle2 size={16} />
+              Campaign completed — all targets reached a terminal state.
+            </div>
+            <ShareNudge
+              text="This workflow worked well?"
+              href="/templates"
+            />
           </div>
         )}
       </Card>
@@ -380,6 +398,24 @@ export function LiveCampaign({ campaign }: { campaign: Campaign }) {
           <TargetRow key={t.id} campaign={campaign} target={t} />
         ))}
       </div>
+      <PublishModal
+        open={publishOpen}
+        onClose={() => setPublishOpen(false)}
+        kind="outreach"
+        initialTitle={campaign.name}
+        initialDescription={`Outreach playbook: ${campaign.goal || campaign.platform} (${campaign.tone}).`}
+        payload={{
+          platform: (["linkedin", "whatsapp", "instagram", "browser", "website"] as const).includes(
+            campaign.platform.toLowerCase() as "linkedin"
+          )
+            ? (campaign.platform.toLowerCase() as "linkedin" | "whatsapp" | "instagram" | "browser" | "website")
+            : "website",
+          goal: campaign.goal,
+          tone: campaign.tone,
+          messageStyle: campaign.messageStyle,
+          targets: campaign.targets.map((t) => t.name),
+        }}
+      />
     </div>
   );
 }

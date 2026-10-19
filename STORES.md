@@ -189,3 +189,26 @@ navigable), `MobileNav` (bottom bar), `StoreInitializer`, `PlaceholderPage`.
 3. Every button must work: disable with `isInFlight(key)` during async actions.
 4. Use `StatusBadge` for all 8 canonical states; never invent new status strings.
 5. The previous brand string must appear nowhere (code, comments, UI, titles, package name). No emojis in UI — Lucide icons only.
+
+### `useReferralStore` — `stores/use-referral-store.ts` (persisted: code, stats, ledger)
+Referral program state. Backed by `lib/services/referral.ts` (mock backend).
+- State: `code: string`, `stats: ReferralStats`, `ledger: ReferralReward[]`, `loaded`
+- Actions: `load()` (hydrates mock backend from persisted snapshot first), `inviteUrl()` (absolute `/invite/<code>`), `recordInviteSent(channel)` (+1 sent, ledger entry, activity log), `simulateFriendJoined()` (demo helper: +1 joined, +50 credits, notification)
+
+### `useTemplateStore` — `stores/use-template-store.ts` (persisted: user-published templates only)
+Community template gallery. Seeded with 8 mock templates (agent/style/outreach kinds).
+- Actions: `load()` (merges seeds + persisted mine), `search(q, kind)`, `publish({kind,title,description,payload})` (idempotent key, adds `mine: true`), `useTemplate(id)` → clones into workspace and returns `{ navigate }`:
+  - `agent` → `useAgentStore.createAgent(...)` → navigate `/agents/<id>`
+  - `style` → applies tone to settings + memory item → navigate `/chats`
+  - `outreach` → navigate `/outreach?template=<id>` (builder prefills via `BuilderInitial`)
+
+## Growth services
+- `lib/services/sharing.ts` — `shareTextFor(kind,title,extra)` (includes "Made with Client X"), `shareUrlFor(channel,text,url)` (WhatsApp wa.me, X intent, LinkedIn share-offsite, Telegram, mailto), `openShare`, `copyText` (clipboard + fallback), `canSystemShare`/`systemShare` (Web Share API → clipboard fallback), `appUrl(path)`.
+- `lib/services/referral.ts` — mock referral backend: `getDashboard`, `hydrate(snapshot)`, `inviteUrl(code)`, `recordInviteSent(channel)`, `simulateFriendJoined` (demo), credit constants (inviter 50, invitee 25).
+
+## Growth UI (`components/growth/`)
+- `ShareButton` — ghost/icon button → platform dropdown (WhatsApp/X/LinkedIn/Telegram/Email/Copy link/System share). Props: `kind: ShareKind`, `title`, `extra?`, `sharePath`.
+- `Attribution` — "Made with Client X" line; hidden when `settings.growth.attribution` is off.
+- `ShareNudge` — tasteful one-line sharing nudge linking to `/referrals`.
+- `PublishModal` — publish agent/style/outreach payloads to the gallery.
+- Public routes (no app shell): `/invite/[code]` (invite landing + claim), `/share/[kind]/[id]` (branded shareable view; `output` kind via `?text=&label=`).

@@ -28,6 +28,8 @@ import { Toggle } from "@/components/ui/toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/empty-state";
 import { TaskCard } from "@/components/tasks/task-card";
+import { ShareButton } from "@/components/growth/share-menu";
+import { PublishModal } from "@/components/growth/publish-modal";
 import {
   agentExecStatus,
   platformIcon,
@@ -146,6 +148,7 @@ export default function AgentDetailPage() {
   const [newKey, setNewKey] = useState("");
   const [newValue, setNewValue] = useState("");
   const [adding, setAdding] = useState(false);
+  const [publishOpen, setPublishOpen] = useState(false);
 
   useEffect(() => {
     if (agent) setDraft(agent.instructions);
@@ -249,6 +252,15 @@ export default function AgentDetailPage() {
                 onClick={handleStop}
               >
                 Stop
+              </Button>
+              <ShareButton
+                kind="agent"
+                title={agent.name}
+                extra={platformLabel[agent.platform]}
+                sharePath={`/share/agent/${agent.id}`}
+              />
+              <Button size="sm" variant="secondary" onClick={() => setPublishOpen(true)}>
+                Publish
               </Button>
             </div>
           </div>
@@ -429,6 +441,18 @@ export default function AgentDetailPage() {
           timeline (persisted approvals and global activity are kept).
         </p>
       </Section>
+      <PublishModal
+        open={publishOpen}
+        onClose={() => setPublishOpen(false)}
+        kind="agent"
+        initialTitle={agent.name}
+        initialDescription={`A ${platformLabel[agent.platform]} agent setup shared from my workspace.`}
+        payload={{
+          platform: agent.platform,
+          instructions: agent.instructions,
+          permissions: agent.permissions,
+        }}
+      />
     </div>
   );
 }
