@@ -8,6 +8,7 @@ import { useTaskStore } from "@/stores/use-task-store";
 import { useMemoryStore } from "@/stores/use-memory-store";
 import { useActivityStore } from "@/stores/use-activity-store";
 import { useNotificationStore } from "@/stores/use-notification-store";
+import { useConnectionsStore } from "@/stores/use-connections-store";
 
 /** Loads all store seed data once when the app shell mounts. */
 export function StoreInitializer() {
@@ -19,6 +20,7 @@ export function StoreInitializer() {
     void useMemoryStore.getState().load();
     void useActivityStore.getState().load();
     void useNotificationStore.getState().load();
+    void useConnectionsStore.getState().load();
   }, []);
   return null;
 }

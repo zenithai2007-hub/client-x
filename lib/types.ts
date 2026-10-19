@@ -231,6 +231,7 @@ export type NavKey =
   | "analytics"
   | "referrals"
   | "templates"
+  | "connections"
   | "settings";
 
 /** Per-action idempotency bookkeeping kept in the state layer. */
@@ -279,3 +280,29 @@ export interface CommunityTemplate {
 }
 
 export type ShareKind = "output" | "agent" | "campaign" | "template";
+
+/* ------------------------------------------------------------------ */
+/* Connections — mock-first integrations (no credential entry in UI)    */
+/* ------------------------------------------------------------------ */
+
+export type ConnectionKind = "whatsapp" | "oauth";
+
+export interface ConnectionPlatform {
+  id: string;
+  name: string;
+  kind: ConnectionKind;
+  /** hex brand color for the card icon */
+  color: string;
+  tagline: string;
+  capabilities: string[];
+  /** mock identity shown after connecting */
+  mockHandle: string;
+  mockLabel: string; // e.g. "Phone number" / "Account"
+}
+
+export interface PlatformConnection {
+  platformId: string;
+  status: "connected" | "disconnected";
+  handle?: string;
+  connectedAt?: string; // ISO 8601
+}
