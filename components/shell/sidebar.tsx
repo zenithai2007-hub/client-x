@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Home, MessageSquare, Bot, Megaphone, ListTodo, Keyboard, Brain,
   Activity, Settings, ChevronLeft, ChevronRight, Plus, X, History,
-  Zap, BarChart3, Gift, LayoutTemplate, Plug, LogOut,
+  Zap, BarChart3, Plug, LogOut, Compass, Bell,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { NavKey } from "@/lib/types";
@@ -20,18 +20,18 @@ import { cn } from "@/lib/cn";
 const NAV: { key: NavKey; label: string; href: string; icon: LucideIcon }[] = [
   { key: "home", label: "Home", href: "/home", icon: Home },
   { key: "chat", label: "Chats", href: "/chats", icon: MessageSquare },
+  { key: "discover", label: "Discover", href: "/discover", icon: Compass },
+  { key: "platforms", label: "Platforms", href: "/platforms", icon: Plug },
   { key: "agents", label: "Agents", href: "/agents", icon: Bot },
-  { key: "outreach", label: "Outreach", href: "/outreach", icon: Megaphone },
   { key: "tasks", label: "Tasks", href: "/tasks", icon: ListTodo },
-  { key: "keyboard", label: "Keyboard", href: "/keyboard", icon: Keyboard },
-  { key: "memory", label: "Memory", href: "/memory", icon: Brain },
+  { key: "outreach", label: "Outreach", href: "/outreach", icon: Megaphone },
   { key: "activity", label: "Activity", href: "/activity", icon: Activity },
   { key: "history", label: "History", href: "/history", icon: History },
+  { key: "memory", label: "Memory", href: "/memory", icon: Brain },
+  { key: "keyboard", label: "Keyboard", href: "/keyboard", icon: Keyboard },
   { key: "automations", label: "Automations", href: "/automations", icon: Zap },
-  { key: "connections", label: "Connections", href: "/connections", icon: Plug },
   { key: "analytics", label: "Analytics", href: "/analytics", icon: BarChart3 },
-  { key: "referrals", label: "Referrals", href: "/referrals", icon: Gift },
-  { key: "templates", label: "Templates", href: "/templates", icon: LayoutTemplate },
+  { key: "notifications", label: "Notifications", href: "/notifications", icon: Bell },
   { key: "settings", label: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -126,6 +126,9 @@ export function Sidebar() {
                 <p className="text-[11px] capitalize text-slate-400">{activeAgent.status}</p>
               </div>
             </div>
+            <p className="mt-2 text-[11px] font-medium text-slate-600" role="status">
+              🟢 Client X Agent — Online
+            </p>
           </div>
         )}
         <Button

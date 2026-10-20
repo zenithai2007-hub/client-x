@@ -4,16 +4,15 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { PlatformConnection } from "@/lib/types";
 import { connectionService } from "@/lib/services/connection-service";
+import { PLATFORM_REGISTRY, getPlatform } from "@/lib/platforms";
 import { useActivityStore } from "./use-activity-store";
-import { useNotificationStore } from "./use-notification-store";
 
 interface ConnectionsState {
   connections: PlatformConnection[];
   loaded: boolean;
   load: () => Promise<void>;
   statusOf: (platformId: string) => PlatformConnection;
-  pairWhatsApp: (phone: string) => Promise<void>;
-  authorizeOAuth: (platformId: string) => Promise<void>;
+  requestConnect: (platformId: string) => Promise<{ ok: boolean; error?: string }>;
   disconnect: (platformId: string) => Promise<void>;
 }
 
@@ -25,8 +24,7 @@ export const useConnectionsStore = create<ConnectionsState>()(
 
       load: async () => {
         if (get().loaded) return;
-        const saved = get().connections;
-        if (saved.length) connectionService.hydrate(saved);
+        // Honest: always start from a clean disconnected snapshot.
         const snap = await connectionService.getSnapshot();
         set({ connections: snap.connections, loaded: true });
       },
@@ -37,38 +35,14 @@ export const useConnectionsStore = create<ConnectionsState>()(
           status: "disconnected",
         },
 
-      pairWhatsApp: async (phone: string) => {
-        const c = await connectionService.completeWhatsAppPairing(phone);
-        set({
-          connections: get().connections.map((x) =>
-            x.platformId === c.platformId ? c : x
-          ),
-        });
-        useActivityStore
+      requestConnect: async (platformId: string) => {
+        const result = await connectionService.connect(platformId);
+        const name = getPlatform(platformId)?.name ?? platformId;
+        await useActivityStore
           .getState()
-          .logEvent("system", `WhatsApp connected (${phone}).`);
-        useNotificationStore
-          .getState()
-          .push("WhatsApp connected", "Your WhatsApp account is now linked.", "success");
-      },
-
-      authorizeOAuth: async (platformId: string) => {
-        const c = await connectionService.completeOAuth(platformId);
-        set({
-          connections: get().connections.map((x) =>
-            x.platformId === c.platformId ? c : x
-          ),
-        });
-        const name =
-          { instagram: "Instagram", linkedin: "LinkedIn", x: "X", telegram: "Telegram", facebook: "Facebook" }[
-            platformId
-          ] ?? platformId;
-        useActivityStore
-          .getState()
-          .logEvent("system", `${name} connected (${c.handle}).`);
-        useNotificationStore
-          .getState()
-          .push(`${name} connected`, `Signed in as ${c.handle}.`, "success");
+          .logEvent("platforms", `Connect requested for ${name} — requires configuration.`);
+        // Never mark anything connected: the service only ever returns failure.
+        return { ok: false as const, error: result.error };
       },
 
       disconnect: async (platformId: string) => {
@@ -78,9 +52,10 @@ export const useConnectionsStore = create<ConnectionsState>()(
             x.platformId === c.platformId ? c : x
           ),
         });
-        useActivityStore
+        const name = getPlatform(platformId)?.name ?? platformId;
+        await useActivityStore
           .getState()
-          .logEvent("system", `Disconnected ${platformId}.`);
+          .logEvent("system", `Disconnected ${name}.`);
       },
     }),
     {
@@ -90,3 +65,6 @@ export const useConnectionsStore = create<ConnectionsState>()(
     }
   )
 );
+
+/** Registry-backed platform list for any UI that needs it. */
+export { PLATFORM_REGISTRY };

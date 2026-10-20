@@ -15,7 +15,7 @@ export function StatCard({
 }: {
   icon: LucideIcon;
   label: string;
-  value: number;
+  value: number | string;
   sub?: string;
   accent: string; // chip classes, e.g. "bg-cx-purpleLight text-cx-purpleDark"
   index?: number;

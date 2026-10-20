@@ -29,11 +29,13 @@ function greeting(): string {
   return "Good evening";
 }
 
-const AGENT_TONE: Record<string, "green" | "blue" | "amber" | "slate"> = {
+const AGENT_TONE: Record<string, "green" | "blue" | "amber" | "slate" | "purple" | "orange"> = {
   active: "green",
   ready: "blue",
   paused: "amber",
   offline: "slate",
+  waiting: "purple",
+  needs_approval: "orange",
 };
 
 export default function HomePage() {

@@ -1,162 +1,66 @@
-/* Mock-first connection service.
-   Simulates QR pairing (WhatsApp) and OAuth-style authorization flows
-   with realistic states. Real backends plug in behind this interface later —
-   the UI never asks for API keys or credentials. */
+/* Client X — connection service (honest version).
+   No real integrations are configured on this workspace.
+   Every platform reports "disconnected" and connect() always fails
+   with an honest, human-readable explanation. Nothing here fabricates
+   a connected state, a handle, a QR pairing, or an OAuth session. */
 
-import { delay, jitter, uid, nowISO } from "./base";
-import type { ConnectionPlatform, PlatformConnection } from "@/lib/types";
-
-export const PLATFORMS: ConnectionPlatform[] = [
-  {
-    id: "whatsapp",
-    name: "WhatsApp",
-    kind: "whatsapp",
-    color: "#25D366",
-    tagline: "Send and receive messages through your WhatsApp account.",
-    capabilities: ["Read messages", "Send messages", "Approval-gated sends"],
-    mockHandle: "+1 (555) 014-2288",
-    mockLabel: "Phone number",
-  },
-  {
-    id: "instagram",
-    name: "Instagram",
-    kind: "oauth",
-    color: "#E1306C",
-    tagline: "Handle DMs and comments with your Instagram agent.",
-    capabilities: ["Read DMs", "Draft replies", "Approval-gated sends"],
-    mockHandle: "@clientx.demo",
-    mockLabel: "Account",
-  },
-  {
-    id: "linkedin",
-    name: "LinkedIn",
-    kind: "oauth",
-    color: "#0A66C2",
-    tagline: "Run outreach campaigns to your LinkedIn network.",
-    capabilities: ["Find profiles", "Personalized outreach", "Approval-gated sends"],
-    mockHandle: "@clientx-demo",
-    mockLabel: "Account",
-  },
-  {
-    id: "x",
-    name: "X",
-    kind: "oauth",
-    color: "#0F1419",
-    tagline: "Draft and schedule posts with your X agent.",
-    capabilities: ["Draft posts", "Reply assistance", "Approval-gated posts"],
-    mockHandle: "@clientx_demo",
-    mockLabel: "Handle",
-  },
-  {
-    id: "telegram",
-    name: "Telegram",
-    kind: "oauth",
-    color: "#229ED9",
-    tagline: "Automate chats and channels via Telegram.",
-    capabilities: ["Read chats", "Send messages", "Approval-gated sends"],
-    mockHandle: "@clientx_demo_bot",
-    mockLabel: "Account",
-  },
-  {
-    id: "facebook",
-    name: "Facebook",
-    kind: "oauth",
-    color: "#1877F2",
-    tagline: "Manage Page messages with your Facebook agent.",
-    capabilities: ["Page messages", "Draft replies", "Approval-gated sends"],
-    mockHandle: "Client X Demo Page",
-    mockLabel: "Page",
-  },
-];
+import { PLATFORM_REGISTRY, getPlatform } from "@/lib/platforms";
+import type { PlatformConnection } from "@/lib/types";
 
 export interface ConnectionSnapshot {
   connections: PlatformConnection[];
 }
 
+function disconnected(platformId: string): PlatformConnection {
+  return { platformId, status: "disconnected" };
+}
+
 class ConnectionService {
-  private state: PlatformConnection[] = PLATFORMS.map((p) => ({
-    platformId: p.id,
-    status: "disconnected" as const,
-  }));
-
-  platform(id: string): ConnectionPlatform | undefined {
-    return PLATFORMS.find((p) => p.id === id);
-  }
-
   async getSnapshot(): Promise<ConnectionSnapshot> {
-    await jitter(80, 220);
-    return { connections: this.state.map((c) => ({ ...c })) };
+    return {
+      connections: PLATFORM_REGISTRY.map((p) => disconnected(p.id)),
+    };
   }
 
-  /** Mock QR pairing payload — looks real, carries no credentials. */
-  pairingPayload(): string {
-    return `clientx-mock-pairing:${uid("pair")}`;
-  }
-
-  async completeWhatsAppPairing(phone: string): Promise<PlatformConnection> {
-    await delay(2200); // realistic pairing handshake
-    return this.setConnected("whatsapp", phone);
-  }
-
-  async completeOAuth(platformId: string): Promise<PlatformConnection> {
-    await jitter(900, 1600); // realistic authorization round-trip
-    const p = this.platform(platformId);
-    return this.setConnected(platformId, p?.mockHandle ?? "@clientx.demo");
+  async connect(
+    platformId: string
+  ): Promise<{ ok: false; error: string }> {
+    const entry = getPlatform(platformId);
+    if (!entry) {
+      return {
+        ok: false,
+        error: "Unknown platform — no integration is available for it.",
+      };
+    }
+    if (entry.availability === "coming-soon") {
+      return {
+        ok: false,
+        error:
+          "Coming soon — no integration is available for this platform yet.",
+      };
+    }
+    if (entry.availability === "unavailable") {
+      return {
+        ok: false,
+        error: "Unavailable — no official integration is available for this platform.",
+      };
+    }
+    return {
+      ok: false,
+      error:
+        "Requires configuration — no official integration is configured for this platform yet.",
+    };
   }
 
   async disconnect(platformId: string): Promise<PlatformConnection> {
-    await jitter(200, 500);
-    this.state = this.state.map((c) =>
-      c.platformId === platformId
-        ? {
-            platformId,
-            status: "disconnected" as const,
-            handle: undefined,
-            connectedAt: undefined,
-            lastSyncedAt: undefined,
-            messageCount: undefined,
-          }
-        : c
-    );
-    const c = this.state.find((x) => x.platformId === platformId)!;
-    return { ...c };
+    return disconnected(platformId);
   }
 
-  /** Restore persisted snapshot into the mock backend. */
-  hydrate(connections: PlatformConnection[]) {
-    const known = new Set(PLATFORMS.map((p) => p.id));
-    this.state = PLATFORMS.map((p) => {
-      const saved = connections.find((c) => c.platformId === p.id);
-      return saved && known.has(saved.platformId)
-        ? { ...saved }
-        : { platformId: p.id, status: "disconnected" as const };
-    });
-  }
-
-  private setConnected(platformId: string, handle: string): PlatformConnection {
-    // Deterministic mock sync stats per platform (display only).
-    const MOCK_MESSAGES: Record<string, number> = {
-      whatsapp: 1284,
-      instagram: 342,
-      linkedin: 96,
-      x: 57,
-      telegram: 418,
-      facebook: 203,
-    };
-    this.state = this.state.map((c) =>
-      c.platformId === platformId
-        ? {
-            platformId,
-            status: "connected" as const,
-            handle,
-            connectedAt: nowISO(),
-            lastSyncedAt: nowISO(),
-            messageCount: MOCK_MESSAGES[platformId] ?? 0,
-          }
-        : c
-    );
-    const c = this.state.find((x) => x.platformId === platformId)!;
-    return { ...c };
+  /** Keep compatibility with store hydration — never resurrects a connection. */
+  hydrate(_connections: PlatformConnection[]): void {
+    // intentionally no-op: persisted connected states are never trusted.
+    // Only real server-verified state may mark a platform connected.
+    void _connections;
   }
 }
 

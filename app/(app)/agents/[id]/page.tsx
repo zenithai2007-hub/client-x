@@ -10,12 +10,13 @@ import {
   Pause,
   Play,
   Plus,
+  RotateCcw,
   Save,
   Square,
   Trash2,
   X,
 } from "lucide-react";
-import type { MemoryItem } from "@/lib/types";
+import type { Agent, AgentStatus, MemoryItem } from "@/lib/types";
 import { useAgentStore } from "@/stores/use-agent-store";
 import { useTaskStore } from "@/stores/use-task-store";
 import { useMemoryStore } from "@/stores/use-memory-store";
@@ -27,6 +28,7 @@ import { Input, Textarea, FieldLabel } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Tabs } from "@/components/ui/tabs";
 import { TaskCard } from "@/components/tasks/task-card";
 import { ShareButton } from "@/components/growth/share-menu";
 import { PublishModal } from "@/components/growth/publish-modal";
@@ -39,6 +41,18 @@ import {
   timeAgo,
   formatDateTime,
 } from "@/components/agents/agent-meta";
+
+const STATUS_OPTIONS: { value: AgentStatus; label: string }[] = [
+  { value: "active", label: "Active" },
+  { value: "ready", label: "Ready" },
+  { value: "paused", label: "Paused" },
+  { value: "offline", label: "Offline" },
+  { value: "waiting", label: "Waiting on user" },
+  { value: "needs_approval", label: "Needs approval" },
+];
+
+const SELECT_CLASS =
+  "w-full rounded-xl bg-cx-bg px-3.5 py-2.5 text-sm text-slate-900 shadow-cx-inset transition-shadow focus:bg-[#F2F4F9] focus:outline-none focus:ring-2 focus:ring-cx-purple/25";
 
 function Section({
   title,
@@ -125,6 +139,98 @@ function MemoryRow({ item }: { item: MemoryItem }) {
   );
 }
 
+function SettingsSection({ agent }: { agent: Agent }) {
+  const [name, setName] = useState(agent.name);
+  const [saved, setSaved] = useState(false);
+
+  const handleSaveName = () => {
+    if (!name.trim()) return;
+    /* Store gap (reported): no renameAgent action exists.
+       Update via setState — no mutation of nested state. */
+    useAgentStore.setState((s) => ({
+      agents: s.agents.map((a) => (a.id === agent.id ? { ...a, name: name.trim() } : a)),
+    }));
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleStatusChange = (status: AgentStatus) => {
+    useAgentStore.setState((s) => ({
+      agents: s.agents.map((a) => (a.id === agent.id ? { ...a, status } : a)),
+    }));
+    useAgentStore.getState().logAgentActivity(agent.id, `Status set to "${status}" by user.`);
+  };
+
+  const handleReset = async () => {
+    await useAgentStore.getState().stopAgent(agent.id);
+    useAgentStore.setState((s) => ({
+      agents: s.agents.map((a) =>
+        a.id === agent.id ? { ...a, activity: [], currentTask: undefined, progress: undefined } : a
+      ),
+    }));
+    useAgentStore.getState().logAgentActivity(agent.id, "Agent reset by user.");
+  };
+
+  return (
+    <Section title="Settings">
+      <div className="space-y-4">
+        <div>
+          <FieldLabel>Agent name</FieldLabel>
+          <div className="flex gap-2">
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Agent name"
+              aria-label="Agent name"
+            />
+            <Button
+              size="md"
+              variant="primary-orange"
+              icon={saved ? <Check size={14} /> : <Save size={14} />}
+              onClick={handleSaveName}
+              disabled={!name.trim()}
+            >
+              {saved ? "Saved" : "Save"}
+            </Button>
+          </div>
+        </div>
+        <div>
+          <FieldLabel>Status</FieldLabel>
+          <select
+            className={SELECT_CLASS}
+            value={agent.status}
+            onChange={(e) => handleStatusChange(e.target.value as AgentStatus)}
+            aria-label="Agent status"
+          >
+            {STATUS_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-[11px] text-slate-400">
+            Status is shown to you only — it never claims a live connection.
+          </p>
+        </div>
+        <div>
+          <FieldLabel>Reset agent</FieldLabel>
+          <Button
+            size="md"
+            variant="danger"
+            icon={<RotateCcw size={14} />}
+            onClick={handleReset}
+          >
+            Reset
+          </Button>
+          <p className="mt-1 text-[11px] text-slate-400">
+            Stops the agent, clears its current task and wipes its local activity timeline.
+          </p>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
 export default function AgentDetailPage() {
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : (params.id as string);
@@ -149,6 +255,7 @@ export default function AgentDetailPage() {
   const [newValue, setNewValue] = useState("");
   const [adding, setAdding] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("details");
 
   useEffect(() => {
     if (agent) setDraft(agent.instructions);
@@ -186,14 +293,6 @@ export default function AgentDetailPage() {
     setTimeout(() => setSavedTick(false), 2000);
   };
 
-  const handleClearActivity = () => {
-    /* Store gap (reported): no clearAgentActivity action exists.
-       Workaround: clear the array via setState — no mutation of nested state. */
-    useAgentStore.setState((s) => ({
-      agents: s.agents.map((a) => (a.id === agent.id ? { ...a, activity: [] } : a)),
-    }));
-  };
-
   const handleStop = async () => {
     await stopAgent(agent.id);
   };
@@ -205,6 +304,16 @@ export default function AgentDetailPage() {
     setNewValue("");
     setAdding(false);
   };
+
+  const tabs = [
+    { key: "details", label: "Details" },
+    { key: "instructions", label: "Instructions" },
+    { key: "memory", label: "Memory", count: agentMemory.length },
+    { key: "permissions", label: "Permissions" },
+    { key: "tasks", label: "Tasks", count: agentTasks.length },
+    { key: "activity", label: "Activity" },
+    { key: "settings", label: "Settings" },
+  ];
 
   return (
     <div className="mx-auto max-w-4xl space-y-5">
@@ -267,180 +376,166 @@ export default function AgentDetailPage() {
         </Card>
       </motion.div>
 
-      {/* Current task */}
-      <Section title="Current Task">
-        {agent.currentTask ? (
-          <div>
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-medium text-slate-800">{agent.currentTask}</p>
-              <span className="text-xs tabular-nums text-slate-500">
-                {Math.round(agent.progress ?? 0)}%
-              </span>
-            </div>
-            <ProgressBar value={agent.progress ?? 0} className="mt-2" />
-          </div>
-        ) : (
-          <p className="text-sm text-slate-400">No active task right now.</p>
-        )}
-      </Section>
+      <div className="overflow-x-auto">
+        <Tabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
+      </div>
 
-      {/* Instructions */}
-      <Section
-        title="Instructions"
-        action={
-          <Button
-            size="sm"
-            variant="primary-orange"
-            loading={savingInstructions}
-            icon={savedTick ? <Check size={14} /> : <Save size={14} />}
-            onClick={handleSaveInstructions}
-          >
-            {savedTick ? "Saved" : "Save"}
-          </Button>
-        }
-      >
-        <Textarea
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          rows={4}
-          placeholder="How this agent should behave…"
-        />
-      </Section>
-
-      {/* Permissions */}
-      <Section title="Permissions">
-        <div className="divide-y divide-slate-100">
-          {Object.keys(agent.permissions).map((key) => (
-            <div key={key} className="flex items-center justify-between gap-3 py-2.5">
-              <div>
-                <p className="text-sm font-medium text-slate-800">
-                  {PERMISSION_LABELS[key] ?? key}
-                </p>
-                <p className="text-xs text-slate-500">{permissionHint(key)}</p>
+      {activeTab === "details" && (
+        <Section title="Current Task">
+          {agent.currentTask ? (
+            <div>
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-medium text-slate-800">{agent.currentTask}</p>
+                <span className="text-xs tabular-nums text-slate-500">
+                  {Math.round(agent.progress ?? 0)}%
+                </span>
               </div>
-              <Toggle
-                checked={!!agent.permissions[key]}
-                disabled={agentBusy(`agent:${agent.id}:perm:${key}`)}
-                onChange={() => togglePermission(agent.id, key)}
-              />
+              <ProgressBar value={agent.progress ?? 0} className="mt-2" />
             </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* Memory */}
-      <Section
-        title="Memory"
-        action={
-          <Button
-            size="sm"
-            variant="secondary"
-            icon={<Plus size={14} />}
-            onClick={() => setAdding((v) => !v)}
-          >
-            Add
-          </Button>
-        }
-      >
-        <div className="space-y-2">
-          {adding && (
-            <div className="rounded-xl border border-cx-purple/30 bg-cx-purpleLight/30 p-3">
-              <FieldLabel>Key</FieldLabel>
-              <Input
-                value={newKey}
-                onChange={(e) => setNewKey(e.target.value)}
-                placeholder="e.g. Daily cap"
-                className="mb-2"
-              />
-              <FieldLabel>Value</FieldLabel>
-              <Input
-                value={newValue}
-                onChange={(e) => setNewValue(e.target.value)}
-                placeholder="e.g. Max 10 connection requests per day"
-                className="mb-2"
-              />
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="primary-orange"
-                  loading={memoryBusy("memory:add")}
-                  icon={<Check size={14} />}
-                  onClick={handleAddMemory}
-                >
-                  Add memory
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setAdding(false)}>
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-          {agentMemory.length === 0 && !adding ? (
-            <p className="text-sm text-slate-400">No memory entries for this agent yet.</p>
           ) : (
-            agentMemory.map((item) => <MemoryRow key={item.id} item={item} />)
+            <p className="text-sm text-slate-400">No active task right now.</p>
           )}
-        </div>
-      </Section>
+        </Section>
+      )}
 
-      {/* Activity */}
-      <Section title="Activity">
-        {agent.activity.length === 0 ? (
-          <p className="text-sm text-slate-400">No activity recorded.</p>
-        ) : (
-          <ol className="relative space-y-3 border-l border-white/50 pl-4">
-            {agent.activity.map((entry, i) => (
-              <li key={`${entry.time}-${i}`} className="relative">
-                <span className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-cx-purple shadow" />
-                <p className="text-sm text-slate-700">{entry.text}</p>
-                <p className="text-[11px] text-slate-400">
-                  {timeAgo(entry.time)} · {formatDateTime(entry.time)}
-                </p>
-              </li>
-            ))}
-          </ol>
-        )}
-      </Section>
+      {activeTab === "instructions" && (
+        <Section
+          title="Instructions"
+          action={
+            <Button
+              size="sm"
+              variant="primary-orange"
+              loading={savingInstructions}
+              icon={savedTick ? <Check size={14} /> : <Save size={14} />}
+              onClick={handleSaveInstructions}
+            >
+              {savedTick ? "Saved" : "Save"}
+            </Button>
+          }
+        >
+          <Textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            rows={4}
+            placeholder="How this agent should behave…"
+          />
+        </Section>
+      )}
 
-      {/* Tasks */}
-      <Section title={`Tasks (${agentTasks.length})`}>
-        {agentTasks.length === 0 ? (
-          <p className="text-sm text-slate-400">No tasks assigned to this agent.</p>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {agentTasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+      {activeTab === "permissions" && (
+        <Section title="Permissions">
+          <div className="divide-y divide-slate-100">
+            {Object.keys(agent.permissions).map((key) => (
+              <div key={key} className="flex items-center justify-between gap-3 py-2.5">
+                <div>
+                  <p className="text-sm font-medium text-slate-800">
+                    {PERMISSION_LABELS[key] ?? key}
+                  </p>
+                  <p className="text-xs text-slate-500">{permissionHint(key)}</p>
+                </div>
+                <Toggle
+                  checked={!!agent.permissions[key]}
+                  disabled={agentBusy(`agent:${agent.id}:perm:${key}`)}
+                  onChange={() => togglePermission(agent.id, key)}
+                />
+              </div>
             ))}
           </div>
-        )}
-      </Section>
+        </Section>
+      )}
 
-      {/* Danger / settings */}
-      <Section title="Danger Zone">
-        <div className="flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            variant="danger"
-            loading={agentBusy(`agent:${agent.id}:stop`)}
-            icon={<Square size={14} />}
-            onClick={handleStop}
-          >
-            Stop agent
-          </Button>
-          <Button
-            size="sm"
-            variant="secondary"
-            icon={<Trash2 size={14} />}
-            onClick={handleClearActivity}
-          >
-            Clear activity
-          </Button>
-        </div>
-        <p className="mt-2 text-xs text-slate-400">
-          Stopping an agent clears its current task. Clearing activity removes its local
-          timeline (persisted approvals and global activity are kept).
-        </p>
-      </Section>
+      {activeTab === "memory" && (
+        <Section
+          title="Memory"
+          action={
+            <Button
+              size="sm"
+              variant="secondary"
+              icon={<Plus size={14} />}
+              onClick={() => setAdding((v) => !v)}
+            >
+              Add
+            </Button>
+          }
+        >
+          <div className="space-y-2">
+            {adding && (
+              <div className="rounded-xl border border-cx-purple/30 bg-cx-purpleLight/30 p-3">
+                <FieldLabel>Key</FieldLabel>
+                <Input
+                  value={newKey}
+                  onChange={(e) => setNewKey(e.target.value)}
+                  placeholder="e.g. Daily cap"
+                  className="mb-2"
+                />
+                <FieldLabel>Value</FieldLabel>
+                <Input
+                  value={newValue}
+                  onChange={(e) => setNewValue(e.target.value)}
+                  placeholder="e.g. Max 10 connection requests per day"
+                  className="mb-2"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="primary-orange"
+                    loading={memoryBusy("memory:add")}
+                    icon={<Check size={14} />}
+                    onClick={handleAddMemory}
+                  >
+                    Add memory
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => setAdding(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+            {agentMemory.length === 0 && !adding ? (
+              <p className="text-sm text-slate-400">No memory entries for this agent yet.</p>
+            ) : (
+              agentMemory.map((item) => <MemoryRow key={item.id} item={item} />)
+            )}
+          </div>
+        </Section>
+      )}
+
+      {activeTab === "activity" && (
+        <Section title="Activity">
+          {agent.activity.length === 0 ? (
+            <p className="text-sm text-slate-400">No activity recorded.</p>
+          ) : (
+            <ol className="relative space-y-3 border-l border-white/50 pl-4">
+              {agent.activity.map((entry, i) => (
+                <li key={`${entry.time}-${i}`} className="relative">
+                  <span className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-cx-purple shadow" />
+                  <p className="text-sm text-slate-700">{entry.text}</p>
+                  <p className="text-[11px] text-slate-400">
+                    {timeAgo(entry.time)} · {formatDateTime(entry.time)}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Section>
+      )}
+
+      {activeTab === "tasks" && (
+        <Section title={`Tasks (${agentTasks.length})`}>
+          {agentTasks.length === 0 ? (
+            <p className="text-sm text-slate-400">No tasks assigned to this agent.</p>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {agentTasks.map((task) => (
+                <TaskCard key={task.id} task={task} />
+              ))}
+            </div>
+          )}
+        </Section>
+      )}
+
+      {activeTab === "settings" && <SettingsSection agent={agent} />}
+
       <PublishModal
         open={publishOpen}
         onClose={() => setPublishOpen(false)}

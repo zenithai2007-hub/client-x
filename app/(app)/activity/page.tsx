@@ -11,6 +11,7 @@ import {
   Keyboard,
   ListTodo,
   Megaphone,
+  Plug,
   Trash2,
   type LucideIcon,
 } from "lucide-react";
@@ -29,6 +30,7 @@ const CATEGORY_META: Record<ActivityCategory, { icon: LucideIcon; chip: string }
   outreach: { icon: Megaphone, chip: "bg-cx-orangeLight text-cx-orangeDark" },
   keyboard: { icon: Keyboard, chip: "bg-blue-50 text-blue-700" },
   tasks: { icon: ListTodo, chip: "bg-emerald-50 text-emerald-700" },
+  platforms: { icon: Plug, chip: "bg-cyan-50 text-cyan-700" },
   system: { icon: Info, chip: "bg-slate-100 text-slate-600" },
 };
 
@@ -40,6 +42,8 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: "outreach", label: "Outreach" },
   { key: "keyboard", label: "Keyboard" },
   { key: "tasks", label: "Tasks" },
+  { key: "platforms", label: "Platforms" },
+  { key: "system", label: "System" },
 ];
 
 export default function ActivityPage() {
@@ -49,7 +53,7 @@ export default function ActivityPage() {
   const [confirmClear, setConfirmClear] = useState(false);
 
   const counts = useMemo(() => {
-    const c: Record<Filter, number> = { all: events.length, agents: 0, outreach: 0, keyboard: 0, tasks: 0, system: 0 };
+    const c: Record<Filter, number> = { all: events.length, agents: 0, outreach: 0, keyboard: 0, tasks: 0, platforms: 0, system: 0 };
     for (const e of events) c[e.category] += 1;
     return c;
   }, [events]);

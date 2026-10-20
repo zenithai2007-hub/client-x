@@ -21,7 +21,7 @@ import { useKeyboardStore } from "@/stores/use-keyboard-store";
 import { useOutreachStore } from "@/stores/use-outreach-store";
 import { useTaskStore } from "@/stores/use-task-store";
 
-const CATEGORIES: ActivityCategory[] = ["agents", "outreach", "keyboard", "tasks", "system"];
+const CATEGORIES: ActivityCategory[] = ["agents", "outreach", "keyboard", "tasks", "platforms", "system"];
 const STATUSES: ExecutionStatus[] = [
   "READY",
   "RUNNING",
@@ -70,8 +70,25 @@ export default function AnalyticsPage() {
       .flatMap((c) => c.targets)
       .filter((t) => t.status === "COMPLETED").length;
     const activeAgents = agents.filter((a) => a.status === "active").length;
-    return { messagesSent, aiGenerations, approved, cancelled, tasksCompleted, targetsCompleted, activeAgents };
+    const allTargets = campaigns.flatMap((c) => c.targets);
+    const outreachSent = allTargets.filter((t) => t.sentAt).length;
+    const responses = Object.values(messagesByConvo)
+      .flat()
+      .filter((m) => m.sender === "them" && !m.typing).length;
+    const conversionRate =
+      outreachSent > 0 ? Math.round((targetsCompleted / outreachSent) * 100) : 0;
+    const opportunitiesFound = allTargets.length;
+    return { messagesSent, aiGenerations, approved, cancelled, tasksCompleted, targetsCompleted, activeAgents, outreachSent, responses, conversionRate, opportunitiesFound };
   }, [messagesByConvo, events, generations, approvals, tasks, campaigns, agents]);
+
+  const platformPerformance = useMemo(() => {
+    const byPlatform = new Map<string, number>();
+    for (const c of campaigns) {
+      const done = c.targets.filter((t) => t.status === "COMPLETED").length;
+      byPlatform.set(c.platform, (byPlatform.get(c.platform) ?? 0) + done);
+    }
+    return Array.from(byPlatform.entries()).map(([label, value]) => ({ label, value }));
+  }, [campaigns]);
 
   const activityByCategory = useMemo(() => {
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
@@ -160,6 +177,41 @@ export default function AnalyticsPage() {
             />
           </div>
 
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <StatCard
+              index={6}
+              icon={Target}
+              label="Outreach sent"
+              value={stats.outreachSent}
+              sub="messages actually sent"
+              accent="bg-cx-orangeLight text-cx-orangeDark"
+            />
+            <StatCard
+              index={7}
+              icon={MessageSquare}
+              label="Responses"
+              value={stats.responses}
+              sub="incoming messages"
+              accent="bg-blue-50 text-blue-700"
+            />
+            <StatCard
+              index={8}
+              icon={CheckCircle2}
+              label="Conversion rate"
+              value={`${stats.conversionRate}%`}
+              sub="completed / sent"
+              accent="bg-emerald-50 text-emerald-700"
+            />
+            <StatCard
+              index={9}
+              icon={Sparkles}
+              label="Opportunities found"
+              value={stats.opportunitiesFound}
+              sub="discovered targets"
+              accent="bg-cx-purpleLight text-cx-purpleDark"
+            />
+          </div>
+
           <div className="grid gap-5 lg:grid-cols-2">
             <BarChart
               title="Activity by category"
@@ -174,6 +226,15 @@ export default function AnalyticsPage() {
               barClass="bg-cx-orange/80"
             />
           </div>
+
+          {platformPerformance.length > 0 && (
+            <BarChart
+              title="Platform performance"
+              subtitle="Completed outreach targets per platform"
+              data={platformPerformance}
+              barClass="bg-cx-purple/80"
+            />
+          )}
         </>
       )}
     </div>

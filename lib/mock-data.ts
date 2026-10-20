@@ -108,7 +108,7 @@ export const seedMessages: Record<string, Message[]> = {
 };
 
 /* ------------------------------------------------------------------ */
-/* Agents (5)                                                          */
+/* Agents (9)                                                          */
 /* ------------------------------------------------------------------ */
 
 export const seedAgents: Agent[] = [
@@ -154,6 +154,38 @@ export const seedAgents: Agent[] = [
     instructions: "You power the on-site chat widget. Answer FAQs from memory first; escalate anything else to the owner.",
     permissions: { sendMessages: true, readProfile: false, manageConnections: false, autoApprove: true },
     activity: [{ time: daysAgo(1), text: "Went offline — no active sessions." }],
+  },
+  {
+    id: "ag-facebook", name: "Facebook Agent", platform: "facebook", status: "ready",
+    instructions: "You monitor Facebook Page messages and comments. Draft friendly replies and wait for approval before posting anything publicly.",
+    permissions: { sendMessages: false, readProfile: true, manageConnections: false, autoApprove: false },
+    activity: [{ time: hoursAgo(5), text: "Drafted 2 comment replies awaiting approval." }],
+  },
+  {
+    id: "ag-outreach", name: "Outreach Agent", platform: "outreach", status: "needs_approval",
+    currentTask: "Discovery draft — Amelia Hart", progress: 30,
+    instructions: "You prepare personalized outreach drafts from discovery results. Never send a first message without explicit approval. Keep drafts short and specific to the prospect.",
+    permissions: { sendMessages: false, readProfile: true, manageConnections: false, autoApprove: false },
+    activity: [
+      { time: minsAgo(48), text: "Prepared a draft for Amelia Hart — waiting for approval." },
+      { time: hoursAgo(2), text: "Built target list from the latest discovery run." },
+    ],
+  },
+  {
+    id: "ag-discovery", name: "Discovery Agent", platform: "discovery", status: "waiting",
+    currentTask: "Retail founders — London", progress: 55,
+    instructions: "You find people and businesses that match the user's target profile. Score every match, explain why it matched, and never invent contact details.",
+    permissions: { sendMessages: false, readProfile: true, manageConnections: false, autoApprove: false },
+    activity: [
+      { time: minsAgo(15), text: "Waiting for the user to confirm the target filters." },
+      { time: minsAgo(40), text: "Scored 24 sample candidates against the filters." },
+    ],
+  },
+  {
+    id: "ag-research", name: "Research Agent", platform: "research", status: "ready",
+    instructions: "You research prospects, companies and markets, then summarize findings with sources noted. Flag anything you could not verify instead of guessing.",
+    permissions: { sendMessages: false, readProfile: true, manageConnections: false, autoApprove: false },
+    activity: [{ time: hoursAgo(6), text: "Summarized competitor pricing notes for the owner." }],
   },
 ];
 

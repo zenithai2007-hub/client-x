@@ -1,9 +1,13 @@
 /* Client X — shared agent presentation helpers (agents feature only). */
 
 import {
+  BookOpen,
+  Compass,
+  Facebook,
   Globe,
   Instagram,
   Linkedin,
+  Megaphone,
   MessageCircle,
   MonitorSmartphone,
   type LucideIcon,
@@ -15,22 +19,33 @@ export const platformIcon: Record<AgentPlatform, LucideIcon> = {
   linkedin: Linkedin,
   whatsapp: MessageCircle,
   instagram: Instagram,
+  facebook: Facebook,
   browser: Globe,
   website: MonitorSmartphone,
+  outreach: Megaphone,
+  discovery: Compass,
+  research: BookOpen,
 };
 
 export const platformLabel: Record<AgentPlatform, string> = {
   linkedin: "LinkedIn",
   whatsapp: "WhatsApp",
   instagram: "Instagram",
+  facebook: "Facebook",
   browser: "Browser",
   website: "Website",
+  outreach: "Outreach",
+  discovery: "Discovery",
+  research: "Research",
 };
 
 /**
  * AgentStatus → canonical ExecutionStatus for StatusBadge.
  * Agents live outside the §26 execution lifecycle; mapping is:
- * active→RUNNING, ready→READY, paused→PAUSED, offline→CANCELLED.
+ * active→RUNNING, ready→READY, paused→PAUSED, offline→CANCELLED,
+ * waiting→WAITING_FOR_USER, needs_approval→WAITING_FOR_USER
+ * (both are "waiting on the user" states — there is no separate
+ * ExecutionStatus for approval, so both surface as WAITING_FOR_USER).
  */
 export function agentExecStatus(s: AgentStatus): ExecutionStatus {
   switch (s) {
@@ -42,6 +57,10 @@ export function agentExecStatus(s: AgentStatus): ExecutionStatus {
       return "PAUSED";
     case "offline":
       return "CANCELLED";
+    case "waiting":
+      return "WAITING_FOR_USER";
+    case "needs_approval":
+      return "WAITING_FOR_USER";
   }
 }
 

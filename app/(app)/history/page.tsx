@@ -11,6 +11,7 @@ import {
   Keyboard,
   ListTodo,
   Megaphone,
+  Plug,
   Search,
   Stamp,
   type LucideIcon,
@@ -49,6 +50,7 @@ const ACTIVITY_ROUTE: Record<ActivityCategory, string> = {
   outreach: "/outreach",
   keyboard: "/keyboard",
   tasks: "/tasks",
+  platforms: "/platforms",
   system: "/activity",
 };
 
@@ -57,6 +59,7 @@ const ACTIVITY_ICON: Record<ActivityCategory, LucideIcon> = {
   outreach: Megaphone,
   keyboard: Keyboard,
   tasks: ListTodo,
+  platforms: Plug,
   system: Info,
 };
 

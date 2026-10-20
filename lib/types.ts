@@ -24,8 +24,17 @@ export interface Conversation {
   mentions?: number;
 }
 
-export type AgentStatus = "active" | "ready" | "paused" | "offline";
-export type AgentPlatform = "linkedin" | "whatsapp" | "instagram" | "browser" | "website";
+export type AgentStatus = "active" | "ready" | "paused" | "offline" | "waiting" | "needs_approval";
+export type AgentPlatform =
+  | "linkedin"
+  | "whatsapp"
+  | "instagram"
+  | "facebook"
+  | "browser"
+  | "website"
+  | "outreach"
+  | "discovery"
+  | "research";
 
 export interface Agent {
   id: string;
@@ -138,7 +147,7 @@ export interface MemoryItem {
   updatedAt: string; // ISO 8601
 }
 
-export type ActivityCategory = "agents" | "outreach" | "keyboard" | "tasks" | "system";
+export type ActivityCategory = "agents" | "outreach" | "keyboard" | "tasks" | "platforms" | "system";
 
 export interface ActivityEvent {
   id: string;
@@ -222,18 +231,20 @@ export type AITransformKind =
 export type NavKey =
   | "home"
   | "chat"
+  | "discover"
+  | "platforms"
   | "agents"
-  | "outreach"
   | "tasks"
-  | "keyboard"
-  | "memory"
+  | "outreach"
   | "activity"
   | "history"
+  | "memory"
+  | "keyboard"
   | "automations"
   | "analytics"
+  | "notifications"
   | "referrals"
   | "templates"
-  | "connections"
   | "settings";
 
 /** Per-action idempotency bookkeeping kept in the state layer. */

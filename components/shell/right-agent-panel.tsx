@@ -16,6 +16,8 @@ const STATUS_STYLE: Record<string, string> = {
   ready: "bg-blue-50 text-blue-700",
   paused: "bg-amber-50 text-amber-700",
   offline: "bg-slate-100 text-slate-500",
+  waiting: "bg-cx-purpleLight text-cx-purpleDark",
+  needs_approval: "bg-cx-orangeLight text-cx-orangeDark",
 };
 
 export function AgentPanelCard() {

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Search, MessageSquare, Bot, ListTodo, Brain, Megaphone, Plus, Play, X,
   ArrowRight, Keyboard as KeyboardIcon, Settings as SettingsIcon,
+  Compass, Plug, User, Building2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -14,6 +15,8 @@ import { useAgentStore } from "@/stores/use-agent-store";
 import { useTaskStore } from "@/stores/use-task-store";
 import { useMemoryStore } from "@/stores/use-memory-store";
 import { useOutreachStore } from "@/stores/use-outreach-store";
+import { PLATFORM_REGISTRY } from "@/lib/platforms";
+import { discoveryCandidates } from "@/lib/discovery-data";
 import { cn } from "@/lib/cn";
 
 interface Entry {
@@ -57,12 +60,36 @@ export function CommandPalette() {
     // Actions
     const actions: Entry[] = [
       { id: "act-new-chat", group: "Actions", label: "New chat", icon: Plus, run: () => { newChat("New conversation"); go("/chats", "chat"); } },
+      { id: "act-start-discovery", group: "Actions", label: "Start discovery", icon: Compass, run: () => go("/discover", "discover") },
       { id: "act-start-outreach", group: "Actions", label: "Start outreach", icon: Megaphone, run: () => go("/outreach", "outreach") },
       { id: "act-create-task", group: "Actions", label: "Create task", icon: ListTodo, run: () => go("/tasks", "tasks") },
+      { id: "act-connect-platform", group: "Actions", label: "Connect platform", icon: Plug, run: () => go("/platforms", "platforms") },
       { id: "act-keyboard", group: "Actions", label: "Open keyboard", icon: KeyboardIcon, run: () => go("/keyboard", "keyboard") },
       { id: "act-settings", group: "Actions", label: "Open settings", icon: SettingsIcon, run: () => go("/settings", "settings") },
     ];
     actions.forEach((a) => { if (match(a.label)) list.push(a); });
+
+    // Platforms (from the platform registry)
+    PLATFORM_REGISTRY.forEach((p) => {
+      if (!match(p.name) && !match(p.category)) return;
+      list.push({
+        id: `platform-${p.id}`, group: "Platforms", label: p.name, hint: p.category,
+        icon: Plug, run: () => go("/platforms", "platforms"),
+      });
+    });
+
+    // People & Companies (from the discovery dataset)
+    discoveryCandidates.forEach((c) => {
+      if (!match(c.name) && !match(c.industry) && !match(c.jobTitle)) return;
+      list.push({
+        id: `dc-${c.id}`,
+        group: c.type === "person" ? "People" : "Companies",
+        label: c.name,
+        hint: `${c.platform} · ${c.industry}${c.jobTitle ? ` · ${c.jobTitle}` : ""}`,
+        icon: c.type === "person" ? User : Building2,
+        run: () => go("/discover", "discover"),
+      });
+    });
 
     conversations.forEach((c) => {
       if (!match(c.name)) return;
@@ -153,7 +180,7 @@ export function CommandPalette() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={onPaletteKey}
-                placeholder="Search chats, agents, tasks, memory…"
+                placeholder="Search chats, agents, tasks, people, companies, memory, platforms…"
                 className="h-12 flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
               />
               <button

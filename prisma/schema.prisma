@@ -1,0 +1,400 @@
+// Client X — production database schema (documentation for the
+// Postgres swap behind lib/server/db.ts).
+//
+// STATUS: This schema is documentation for production migration.
+// The app currently runs on the in-memory repositories in
+// lib/server/db.ts. No real database is connected and no Prisma
+// client has been installed or generated yet. When DATABASE_URL is
+// set and the client is wired up, the repositories target Postgres
+// with exactly these models — no route handler changes are needed.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --------------------------------------------------------------------
+// Identity
+// --------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  plan         String   @default("free")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  conversations Conversation[]
+  agents        Agent[]
+  tasks         ClientTask[]
+  campaigns     Campaign[]
+  notifications Notification[]
+  memories      Memory[]
+  activityLogs  ActivityLog[]
+  approvals     Approval[]
+  connections   PlatformConnection[]
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String // auth provider id, e.g. "google" or "credentials"
+  providerAccountId String
+  // Credential / token material lives server-side only. It is never
+  // serialised into any client-facing JSON response.
+  refreshToken      String?  @db.Text
+  accessToken       String?  @db.Text
+  expiresAt         DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+// --------------------------------------------------------------------
+// Messaging
+// --------------------------------------------------------------------
+
+enum ConversationPlatform {
+  WHATSAPP
+  LINKEDIN
+  INSTAGRAM
+  TELEGRAM
+  X
+  WEBSITE
+  BROWSER
+}
+
+model Conversation {
+  id          String               @id @default(cuid())
+  userId      String
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contactId   String?
+  contact     Contact?             @relation(fields: [contactId], references: [id])
+  platform    ConversationPlatform @default(WEBSITE)
+  title       String
+  avatarColor String               @default("#64748B")
+  lastMessage String               @default("")
+  lastTime    DateTime             @default(now())
+  unread      Int                  @default(0)
+  online      Boolean              @default(false)
+  archived    Boolean              @default(false)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  messages    Message[]
+
+  @@index([userId])
+  @@index([contactId])
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         String // "me" | "them"
+  text           String        @db.Text
+  status         MessageStatus @default(SENT)
+  createdAt      DateTime      @default(now())
+
+  @@index([conversationId])
+}
+
+// --------------------------------------------------------------------
+// Agents & tasks
+// --------------------------------------------------------------------
+
+enum AgentStatus {
+  ACTIVE
+  READY
+  PAUSED
+  OFFLINE
+}
+
+model Agent {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  platform     String
+  status       AgentStatus @default(READY)
+  currentTask  String?
+  instructions String      @db.Text
+  permissions  Json        @default("{}")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  tasks        ClientTask[]
+
+  @@index([userId])
+}
+
+// Canonical execution states (mirror lib/types.ts ExecutionStatus).
+enum ExecutionStatus {
+  READY
+  RUNNING
+  PAUSED
+  WAITING_FOR_USER
+  RETRYING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model ClientTask {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentId     String?
+  agent       Agent?          @relation(fields: [agentId], references: [id])
+  title       String
+  status      ExecutionStatus @default(READY)
+  progress    Int             @default(0)
+  total       Int             @default(100)
+  detail      String?         @db.Text
+  attempt     Int             @default(0)
+  error       String?         @db.Text
+  completedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  events      TaskEvent[]
+
+  @@index([userId])
+  @@index([agentId])
+}
+
+model TaskEvent {
+  id        String     @id @default(cuid())
+  taskId    String
+  task      ClientTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  kind      String // "status-change" | "note" | "verification" | "retry"
+  text      String     @db.Text
+  createdAt DateTime   @default(now())
+
+  @@index([taskId])
+}
+
+// --------------------------------------------------------------------
+// Platforms & connections
+// --------------------------------------------------------------------
+
+enum PlatformStatus {
+  OAUTH_AVAILABLE
+  API_AVAILABLE
+  REQUIRES_CONFIGURATION
+  COMING_SOON
+  UNAVAILABLE
+}
+
+model Platform {
+  id               String         @id @default(cuid())
+  key              String         @unique // "whatsapp" | "linkedin" | ...
+  label            String
+  kind             String // "messaging" | "social" | "automation"
+  status           PlatformStatus @default(REQUIRES_CONFIGURATION)
+  integrationNotes String         @db.Text
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  connections      PlatformConnection[]
+}
+
+enum ConnectionStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+}
+
+// A row exists only after a real integration completes. Honest
+// availability (Platform.status) is NOT a connection.
+model PlatformConnection {
+  id               String           @id @default(cuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platformId       String
+  platform         Platform         @relation(fields: [platformId], references: [id])
+  status           ConnectionStatus @default(DISCONNECTED)
+  externalAccount  String?
+  lastSyncedAt     DateTime?
+  // Tokens/credentials for the integration live server-side only and
+  // are never returned to the client.
+  credentialRef    String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@unique([userId, platformId])
+  @@index([userId])
+}
+
+// --------------------------------------------------------------------
+// Contacts, companies, campaigns
+// --------------------------------------------------------------------
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  industry  String?
+  location  String?
+  website   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contacts  Contact[]
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  email     String?
+  location  String?
+  profileUrl String?
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conversations Conversation[]
+  targets       CampaignTarget[]
+}
+
+model Campaign {
+  id           String          @id @default(cuid())
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  platform     String
+  goal         String          @db.Text
+  tone         String          @default("Professional")
+  messageStyle String          @default("Short + personalized")
+  status       ExecutionStatus @default(READY)
+  attempt      Int             @default(0)
+  error        String?         @db.Text
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  targets      CampaignTarget[]
+  approvals    Approval[]
+
+  @@index([userId])
+}
+
+model CampaignTarget {
+  id                    String          @id @default(cuid())
+  campaignId            String
+  campaign              Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contactId             String?
+  contact               Contact?        @relation(fields: [contactId], references: [id])
+  name                  String
+  state                 String // granular pipeline position (lib/types.ts TargetState)
+  status                ExecutionStatus @default(READY)
+  message               String?         @db.Text
+  note                  String?         @db.Text
+  awaitingApproval      Boolean         @default(false)
+  approvalId            String?
+  attempt               Int             @default(0)
+  error                 String?         @db.Text
+  sentAt                DateTime?
+  verificationConfirmed Boolean         @default(false)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  @@index([campaignId])
+}
+
+// --------------------------------------------------------------------
+// Approvals, notifications, memory, activity
+// --------------------------------------------------------------------
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  CANCELLED
+}
+
+model Approval {
+  id         String         @id @default(cuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaignId String?
+  campaign   Campaign?      @relation(fields: [campaignId], references: [id])
+  agentId    String
+  target     String
+  targetId   String?
+  action     String // e.g. "send-message" | "execute"
+  message    String         @db.Text
+  editedText String?        @db.Text
+  status     ApprovalStatus @default(PENDING)
+  createdAt  DateTime       @default(now())
+  resolvedAt DateTime?
+
+  @@index([userId])
+  @@index([campaignId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String   @db.Text
+  kind      String // "info" | "success" | "warning" | "approval" | "agent"
+  href      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Memory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  section   String // "global" | "agent" | "platform" | "conversation" | "outreach"
+  key       String
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, section, key])
+  @@index([userId])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category  String // "agents" | "outreach" | "keyboard" | "tasks" | "system"
+  text      String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([category])
+}

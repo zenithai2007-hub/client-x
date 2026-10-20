@@ -37,8 +37,31 @@ const FALLBACK_REPLIES = [
   "Thanks for the details — I'm on it right now.",
 ];
 
+/* Roman-Urdu shorthand commands → ready-to-send English messages.
+   e.g. "Sarah ko bolo ke main feedback check kar raha hoon" */
+const ROMAN_URDU_PATTERN = /\b(ko bolo|mein|mein ne|kar raha|kar rahi|bhejo|bata do)\b/i;
+
+function romanUrduToMessage(t: string): string {
+  const text = t.trim();
+  const nameMatch = text.match(/^([A-Z][a-z]+)\s+ko\s+bolo/i);
+  const name = nameMatch ? nameMatch[1] : null;
+  if (/feedback/i.test(text) && /check/i.test(text)) {
+    return `Hi ${name ?? "there"}, thanks for the feedback. I'm reviewing the comments now and will get back to you shortly.`;
+  }
+  if (/call/i.test(text)) {
+    return `Hi ${name ?? "there"}, just confirming our call. I'll speak with you at the scheduled time.`;
+  }
+  if (/price|quote/i.test(text)) {
+    return `Hi ${name ?? "there"}, I'll prepare the quote details and send them over shortly.`;
+  }
+  if (/follow.?up/i.test(text)) {
+    return `Hi ${name ?? "there"}, just following up on this — let me know if you need anything from my side.`;
+  }
+  return `Hi ${name ?? "there"}, noted — I'll take care of this and get back to you shortly.`;
+}
+
 const TRANSFORMS: Record<AITransformKind, (t: string) => string> = {
-  rewrite: (t) => t.trim(),
+  rewrite: (t) => (ROMAN_URDU_PATTERN.test(t) ? romanUrduToMessage(t) : t.trim()),
   professional: (t) =>
     `Dear team,\n\n${t.trim()}\n\nBest regards,\nClient X`,
   friendly: (t) => `Hey! ${t.trim()} Let me know if you need anything else — happy to help.`,
@@ -48,9 +71,14 @@ const TRANSFORMS: Record<AITransformKind, (t: string) => string> = {
   },
   longer: (t) =>
     `${t.trim()}\n\nTo expand on that: this gives us room to cover the details properly, and I'll follow up with any updates as soon as they're ready.`,
-  translate: (t) => `[Urdu] ${t.trim()}`,
+  translate: (t) =>
+    ROMAN_URDU_PATTERN.test(t)
+      ? romanUrduToMessage(t)
+      : t.trim(),
   "generate-reply": (t) =>
-    `Thanks for your message. Regarding "${t.slice(0, 60)}${t.length > 60 ? "…" : ""}", I'll confirm the details and get back to you shortly.`,
+    ROMAN_URDU_PATTERN.test(t)
+      ? romanUrduToMessage(t)
+      : `Thanks for your message. Regarding "${t.slice(0, 60)}${t.length > 60 ? "…" : ""}", I'll confirm the details and get back to you shortly.`,
   personalize: (t) => t.trim(),
   improve: (t) =>
     t
