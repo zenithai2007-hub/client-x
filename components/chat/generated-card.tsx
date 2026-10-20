@@ -65,7 +65,7 @@ export function GeneratedCard({
           </Badge>
           <button
             onClick={onClose}
-            className="ml-auto rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="ml-auto rounded-lg p-1.5 text-slate-400 hover:bg-white/60 hover:text-slate-600"
             aria-label="Discard generated text"
           >
             <X size={16} />

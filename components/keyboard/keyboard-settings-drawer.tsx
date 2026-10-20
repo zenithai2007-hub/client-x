@@ -85,9 +85,9 @@ export function KeyboardSettingsDrawer({
             animate={{ x: 0 }}
             exit={{ x: 340 }}
             transition={{ type: "spring", stiffness: 380, damping: 38 }}
-            className="fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col bg-white shadow-cx-pop"
+            className="fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col bg-cx-surface shadow-cx-pop"
           >
-            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <div className="flex items-center justify-between border-b border-white/50 px-5 py-4">
               <div className="flex items-center gap-2.5">
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-cx-purpleLight text-cx-purpleDark">
                   <Settings2 size={18} />
@@ -100,7 +100,7 @@ export function KeyboardSettingsDrawer({
               <button
                 onClick={onClose}
                 aria-label="Close"
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-white/60 hover:text-slate-600"
               >
                 <X size={18} />
               </button>
@@ -162,7 +162,7 @@ export function KeyboardSettingsDrawer({
                   {shortcuts.map((s) => (
                     <div
                       key={s.id}
-                      className="flex items-center justify-between rounded-xl border border-slate-200/70 bg-slate-50/60 px-3.5 py-2.5"
+                      className="flex items-center justify-between rounded-xl  bg-cx-bg shadow-cx-inset-sm/60 px-3.5 py-2.5"
                     >
                       <div className="flex items-center gap-2.5">
                         <Zap size={15} className="shrink-0 text-cx-purple" />

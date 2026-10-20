@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
+/** Soft 3D raised card — brighter than the page bg, dual diffused shadows,
+ *  inner top highlight. No flat borders. */
 export function Card({
   children,
   className,
@@ -13,8 +15,8 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-2xl bg-white border border-slate-200/70 shadow-cx-card",
-        hover && "transition-shadow hover:shadow-cx-card-hover",
+        "rounded-2xl bg-cx-surface shadow-cx-card",
+        hover && "transition-shadow duration-200 hover:shadow-cx-card-hover",
         className
       )}
     >

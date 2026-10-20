@@ -247,7 +247,7 @@ export default function AutomationsPage() {
                     <button
                       onClick={() => openEdit(r)}
                       aria-label={`Edit ${r.name}`}
-                      className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                      className="rounded-lg p-2 text-slate-400 hover:bg-white/60 hover:text-slate-600"
                     >
                       <Pencil size={15} />
                     </button>

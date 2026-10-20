@@ -220,10 +220,10 @@ export const seedActivity: ActivityEvent[] = [
 /* ------------------------------------------------------------------ */
 
 export const seedNotifications: AppNotification[] = [
-  { id: id("ntf"), title: "Approval needed", body: "LinkedIn Agent drafted a message for Ava K. — review to send.", time: minsAgo(31), read: false, kind: "approval" },
-  { id: id("ntf"), title: "Verification required", body: "Competitor pricing research paused — the site needs human verification.", time: hoursAgo(2), read: false, kind: "warning" },
-  { id: id("ntf"), title: "Batch 12 finished", body: "40 messages sent, 6 replies received.", time: daysAgo(1), read: true, kind: "success" },
-  { id: id("ntf"), title: "Welcome to Client X", body: "Your AI execution workspace is ready.", time: daysAgo(2), read: true, kind: "info" },
+  { id: id("ntf"), title: "Approval needed", body: "LinkedIn Agent drafted a message for Ava K. — review to send.", time: minsAgo(31), read: false, kind: "approval", href: "/agents" },
+  { id: id("ntf"), title: "Verification required", body: "Competitor pricing research paused — the site needs human verification.", time: hoursAgo(2), read: false, kind: "warning", href: "/tasks" },
+  { id: id("ntf"), title: "Batch 12 finished", body: "40 messages sent, 6 replies received.", time: daysAgo(1), read: true, kind: "success", href: "/outreach" },
+  { id: id("ntf"), title: "Welcome to Client X", body: "Your AI execution workspace is ready.", time: daysAgo(2), read: true, kind: "info", href: "/home" },
 ];
 
 /* ------------------------------------------------------------------ */

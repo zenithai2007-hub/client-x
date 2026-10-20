@@ -144,9 +144,9 @@ export function CommandPalette() {
             exit={{ opacity: 0, y: -8, scale: 0.99 }}
             transition={{ type: "spring", stiffness: 400, damping: 32 }}
             onClick={(e) => e.stopPropagation()}
-            className="mx-auto mt-[10vh] max-w-lg overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-cx-pop"
+            className="mx-auto mt-[10vh] max-w-lg overflow-hidden rounded-2xl  bg-cx-surface shadow-cx-pop"
           >
-            <div className="flex items-center gap-2 border-b border-slate-200/70 px-4">
+            <div className="flex items-center gap-2 border-b border-white/60 px-4">
               <Search size={17} className="text-slate-400" />
               <input
                 ref={inputRef}
@@ -158,7 +158,7 @@ export function CommandPalette() {
               />
               <button
                 onClick={() => setCommandPaletteOpen(false)}
-                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100"
+                className="rounded-lg p-1 text-slate-400 hover:bg-white/60"
                 aria-label="Close"
               >
                 <X size={16} />
@@ -191,7 +191,7 @@ export function CommandPalette() {
                     >
                       <span className={cn(
                         "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-                        i === cursor ? "bg-white text-cx-purple" : "bg-slate-100 text-slate-500"
+                        i === cursor ? "bg-cx-surface text-cx-purple" : "bg-slate-100 text-slate-500"
                       )}>
                         <Icon size={15} />
                       </span>
@@ -205,7 +205,7 @@ export function CommandPalette() {
                 );
               })}
             </div>
-            <div className="flex items-center gap-3 border-t border-slate-200/70 px-4 py-2 text-[11px] text-slate-400">
+            <div className="flex items-center gap-3 border-t border-white/60 px-4 py-2 text-[11px] text-slate-400">
               <span><kbd className="rounded bg-slate-100 px-1">↑↓</kbd> navigate</span>
               <span><kbd className="rounded bg-slate-100 px-1">↵</kbd> select</span>
               <span><kbd className="rounded bg-slate-100 px-1">esc</kbd> close</span>

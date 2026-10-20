@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bell, CheckCheck, Search } from "lucide-react";
 import type { NavKey } from "@/lib/types";
@@ -35,8 +36,28 @@ const KIND_DOT: Record<string, string> = {
   agent: "bg-slate-500",
 };
 
+/** Notification deep-links → sidebar nav key (keeps the topbar title in sync). */
+const NAV_BY_HREF: Record<string, NavKey> = {
+  "/home": "home",
+  "/chats": "chat",
+  "/agents": "agents",
+  "/outreach": "outreach",
+  "/tasks": "tasks",
+  "/keyboard": "keyboard",
+  "/memory": "memory",
+  "/activity": "activity",
+  "/history": "history",
+  "/automations": "automations",
+  "/analytics": "analytics",
+  "/referrals": "referrals",
+  "/templates": "templates",
+  "/connections": "connections",
+  "/settings": "settings",
+};
+
 export function TopBar() {
-  const { activeNav, toggleCommandPalette } = useUIStore();
+  const router = useRouter();
+  const { activeNav, setActiveNav, toggleCommandPalette } = useUIStore();
   const { notifications, load, markRead, markAllRead, unreadCount } = useNotificationStore();
   const [bellOpen, setBellOpen] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
@@ -57,14 +78,14 @@ export function TopBar() {
   const unread = unreadCount();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-slate-200/70 bg-[#F7F8FC]/90 px-4 backdrop-blur sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/60 bg-[#E9EDF4]/90 px-4 backdrop-blur sm:px-6">
       <h1 className="text-lg font-bold tracking-tight text-slate-900">{TITLES[activeNav]}</h1>
 
       <div className="ml-auto flex items-center gap-2">
         {/* Ctrl+K trigger */}
         <button
           onClick={toggleCommandPalette}
-          className="hidden items-center gap-2 rounded-xl border border-slate-200/70 bg-white px-3 py-2 text-sm text-slate-400 shadow-cx-card hover:text-slate-600 sm:flex"
+          className="hidden items-center gap-2 rounded-xl  bg-cx-surface px-3 py-2 text-sm text-slate-400 shadow-cx-card hover:text-slate-600 sm:flex"
         >
           <Search size={15} />
           <span>Search…</span>
@@ -74,7 +95,7 @@ export function TopBar() {
         </button>
         <button
           onClick={toggleCommandPalette}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/70 bg-white text-slate-500 shadow-cx-card sm:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-xl  bg-cx-surface text-slate-500 shadow-cx-card sm:hidden"
           aria-label="Search"
         >
           <Search size={18} />
@@ -84,7 +105,7 @@ export function TopBar() {
         <div ref={bellRef} className="relative">
           <button
             onClick={() => setBellOpen((o) => !o)}
-            className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/70 bg-white text-slate-500 shadow-cx-card hover:text-slate-700"
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl  bg-cx-surface text-slate-500 shadow-cx-card hover:text-slate-700"
             aria-label="Notifications"
           >
             <Bell size={18} />
@@ -101,7 +122,7 @@ export function TopBar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -6, scale: 0.98 }}
                 transition={{ duration: 0.14 }}
-                className="absolute right-0 z-50 mt-2 w-[340px] max-w-[90vw] rounded-2xl border border-slate-200/70 bg-white p-2 shadow-cx-pop"
+                className="absolute right-0 z-50 mt-2 w-[340px] max-w-[90vw] rounded-2xl  bg-cx-surface p-2 shadow-cx-pop"
               >
                 <div className="flex items-center justify-between px-2 py-1.5">
                   <p className="text-sm font-semibold text-slate-800">Notifications</p>
@@ -119,9 +140,17 @@ export function TopBar() {
                   {notifications.map((n) => (
                     <button
                       key={n.id}
-                      onClick={() => markRead(n.id)}
+                      onClick={() => {
+                        void markRead(n.id);
+                        setBellOpen(false);
+                        if (n.href) {
+                          const nav = NAV_BY_HREF[n.href];
+                          if (nav) setActiveNav(nav);
+                          router.push(n.href);
+                        }
+                      }}
                       className={cn(
-                        "flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-slate-50",
+                        "flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-cx-bg shadow-cx-inset-sm",
                         !n.read && "bg-cx-purpleLight/40"
                       )}
                     >

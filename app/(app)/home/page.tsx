@@ -6,6 +6,7 @@ import {
   Bot, MessageSquare, Megaphone, ListTodo, Plus, Pause, Play, CheckCircle2, ShieldAlert,
 } from "lucide-react";
 import { useAgentStore } from "@/stores/use-agent-store";
+import { useAuthStore } from "@/stores/use-auth-store";
 import { useActivityStore } from "@/stores/use-activity-store";
 import { useTaskStore } from "@/stores/use-task-store";
 import { useChatStore } from "@/stores/use-chat-store";
@@ -44,6 +45,8 @@ export default function HomePage() {
     resumeAfterVerification, pauseTask, stopTask,
   } = useTaskStore();
   const newChat = useChatStore((s) => s.newChat);
+  const authUser = useAuthStore((s) => s.user);
+  const firstName = authUser?.name.split(" ")[0] ?? "there";
   const { campaigns } = useOutreachStore();
   const { setActiveNav } = useUIStore();
   const [taskModal, setTaskModal] = useState(false);
@@ -76,7 +79,7 @@ export default function HomePage() {
     <div className="mx-auto max-w-5xl space-y-6">
       {/* Greeting */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900">{greeting()}, Zubair</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900">{greeting()}, {firstName}</h2>
         <p className="mt-1 text-sm text-slate-500">
           {runningTasks.length} task{runningTasks.length === 1 ? "" : "s"} running ·{" "}
           {pending.length} approval{pending.length === 1 ? "" : "s"} pending ·{" "}
@@ -184,7 +187,7 @@ export default function HomePage() {
               { label: "Tasks", n: byCat("tasks") },
               { label: "System", n: byCat("system") },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl bg-slate-50 px-2 py-3">
+              <div key={s.label} className="rounded-xl bg-cx-bg shadow-cx-inset-sm px-2 py-3">
                 <p className="text-xl font-bold text-slate-900">{s.n}</p>
                 <p className="text-[11px] text-slate-400">{s.label}</p>
               </div>

@@ -102,7 +102,7 @@ function MemoryRow({ item }: { item: MemoryItem }) {
   }
 
   return (
-    <div className="group flex items-start justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-3">
+    <div className="group flex items-start justify-between gap-3 rounded-xl border border-white/50 bg-cx-bg shadow-cx-inset-sm/60 p-3">
       <div className="min-w-0">
         <p className="text-xs font-semibold text-slate-800">{item.key}</p>
         <p className="mt-0.5 text-xs text-slate-500">{item.value}</p>
@@ -388,7 +388,7 @@ export default function AgentDetailPage() {
         {agent.activity.length === 0 ? (
           <p className="text-sm text-slate-400">No activity recorded.</p>
         ) : (
-          <ol className="relative space-y-3 border-l border-slate-200 pl-4">
+          <ol className="relative space-y-3 border-l border-white/50 pl-4">
             {agent.activity.map((entry, i) => (
               <li key={`${entry.time}-${i}`} className="relative">
                 <span className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-cx-purple shadow" />

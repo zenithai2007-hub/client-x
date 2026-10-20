@@ -106,10 +106,24 @@ export default function ConnectionsPage() {
                 </div>
 
                 {connected && conn.handle && (
-                  <div className="mt-3 flex items-center gap-2 rounded-xl bg-emerald-50/70 px-3 py-2 text-[13px]">
-                    <CheckCircle2 size={15} className="shrink-0 text-emerald-600" />
-                    <span className="text-slate-500">{p.mockLabel}:</span>
-                    <span className="font-semibold text-slate-800">{conn.handle}</span>
+                  <div className="mt-3 space-y-1.5 rounded-xl bg-emerald-50/70 px-3 py-2 text-[13px]">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 size={15} className="shrink-0 text-emerald-600" />
+                      <span className="text-slate-500">{p.mockLabel}:</span>
+                      <span className="font-semibold text-slate-800">{conn.handle}</span>
+                    </div>
+                    <p className="pl-[23px] text-[11px] text-slate-400">
+                      Last synced{" "}
+                      {conn.lastSyncedAt
+                        ? new Date(conn.lastSyncedAt).toLocaleString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            hour: "numeric",
+                            minute: "2-digit",
+                          })
+                        : "just now"}{" "}
+                      · {conn.messageCount ?? 0} messages
+                    </p>
                   </div>
                 )}
 

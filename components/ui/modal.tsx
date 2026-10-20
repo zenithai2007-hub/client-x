@@ -35,7 +35,7 @@ export function Modal({
             transition={{ type: "spring", stiffness: 400, damping: 32 }}
             onClick={(e) => e.stopPropagation()}
             className={cn(
-              "w-full max-w-md rounded-2xl bg-white p-5 shadow-cx-pop border border-slate-200/70",
+              "w-full max-w-md rounded-3xl bg-cx-surface p-5 shadow-cx-pop",
               className
             )}
           >
@@ -43,7 +43,7 @@ export function Modal({
               {title ? <h2 className="text-base font-semibold text-slate-900">{title}</h2> : <span />}
               <button
                 onClick={onClose}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-white/60 hover:text-slate-600"
                 aria-label="Close"
               >
                 <X size={18} />

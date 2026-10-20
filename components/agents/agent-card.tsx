@@ -65,7 +65,7 @@ export function AgentCard({ agent, index = 0 }: { agent: Agent; index?: number }
           )}
         </div>
 
-        <div className="mt-4 flex items-center gap-2 border-t border-slate-100 pt-3">
+        <div className="mt-4 flex items-center gap-2 border-t border-white/50 pt-3">
           <Button
             size="sm"
             variant="ghost"

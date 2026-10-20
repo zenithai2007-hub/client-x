@@ -102,7 +102,7 @@ export default function KeyboardPage() {
   };
 
   const featureBtn =
-    "flex items-center justify-center gap-2 rounded-xl border border-slate-200/70 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 shadow-cx-card transition-colors hover:border-cx-purple/40 hover:text-cx-purpleDark disabled:opacity-50";
+    "flex items-center justify-center gap-2 rounded-xl  bg-cx-surface px-3 py-2.5 text-sm font-medium text-slate-700 shadow-cx-card transition-colors hover:border-cx-purple/40 hover:text-cx-purpleDark disabled:opacity-50";
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-5">
@@ -181,7 +181,7 @@ export default function KeyboardPage() {
               </button>
             </div>
 
-            <div className="mt-4 rounded-xl bg-slate-50/80 p-3.5">
+            <div className="mt-4 rounded-xl bg-cx-bg shadow-cx-inset-sm/80 p-3.5">
               <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
                 Generated output
               </p>
@@ -256,7 +256,7 @@ export default function KeyboardPage() {
                   <button
                     key={item.id}
                     onClick={() => reinsert(item.text)}
-                    className="rounded-xl border border-slate-200/70 bg-slate-50/60 px-3 py-2 text-left transition-colors hover:border-cx-purple/40"
+                    className="rounded-xl  bg-cx-bg shadow-cx-inset-sm/60 px-3 py-2 text-left transition-colors hover:border-cx-purple/40"
                   >
                     <p className="line-clamp-2 text-sm text-slate-700">{item.text}</p>
                     <p className="mt-0.5 text-[11px] text-slate-400">{timeAgo(item.time)} · tap to re-insert</p>

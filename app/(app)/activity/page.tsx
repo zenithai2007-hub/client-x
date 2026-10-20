@@ -112,7 +112,7 @@ export default function ActivityPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="flex gap-3 rounded-xl px-3 py-2.5 hover:bg-slate-50/70"
+                    className="flex gap-3 rounded-xl px-3 py-2.5 hover:bg-cx-bg shadow-cx-inset-sm/70"
                   >
                     <span
                       className={cn(

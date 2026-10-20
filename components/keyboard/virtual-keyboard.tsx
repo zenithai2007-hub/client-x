@@ -33,7 +33,7 @@ function Key({
         "flex h-11 min-w-0 flex-1 items-center justify-center rounded-lg border text-sm font-medium shadow-sm transition-colors",
         active
           ? "border-cx-purple bg-cx-purpleLight text-cx-purpleDark"
-          : "border-slate-200/80 bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100",
+          : "border-white/60 bg-cx-surface text-slate-700 hover:bg-cx-bg shadow-cx-inset-sm active:bg-slate-100",
         className
       )}
     >
@@ -66,9 +66,9 @@ export function VirtualKeyboard() {
         onChange={(e) => setKbInput(e.target.value)}
         placeholder="Tap the keys below — or type here — to preview the Client X keyboard."
         rows={4}
-        className="w-full resize-none rounded-2xl border border-slate-200/70 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-cx-purple focus:outline-none focus:ring-2 focus:ring-cx-purple/15"
+        className="w-full resize-none rounded-2xl  bg-cx-surface px-4 py-3 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-cx-purple focus:outline-none focus:ring-2 focus:ring-cx-purple/15"
       />
-      <div className="rounded-2xl border border-slate-200/70 bg-slate-100/60 p-2.5 shadow-inner sm:p-3">
+      <div className="rounded-2xl  bg-slate-100/60 p-2.5 shadow-inner sm:p-3">
         <div className="flex flex-col gap-1.5">
           <div className="flex gap-1.5">
             {ROW_TOP.map((k) => (

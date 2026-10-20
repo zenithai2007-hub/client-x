@@ -55,7 +55,7 @@ export function ChatsView() {
         {activeConversation ? (
           <ChatThread conversation={activeConversation} onBack={() => setMobileThread(false)} />
         ) : (
-          <div className="flex h-full items-center justify-center rounded-2xl border border-slate-200/70 bg-white px-6 shadow-cx-card">
+          <div className="flex h-full items-center justify-center rounded-2xl  bg-cx-surface px-6 shadow-cx-card">
             <EmptyState
               icon={MessagesSquare}
               title="Select a chat"

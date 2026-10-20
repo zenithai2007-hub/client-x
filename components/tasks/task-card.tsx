@@ -117,7 +117,7 @@ export function TaskCard({ task, index = 0 }: { task: ClientTask; index?: number
             </div>
           )}
 
-          <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-3">
+          <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-white/50 pt-3">
             {(task.status === "READY" || task.status === "CANCELLED") && (
               <Button
                 size="sm"
@@ -183,7 +183,7 @@ export function TaskCard({ task, index = 0 }: { task: ClientTask; index?: number
             <StatusBadge status={task.status} attempt={task.attempt} />
           </div>
           {task.detail && <p className="text-sm text-slate-600">{task.detail}</p>}
-          <div className="rounded-xl bg-slate-50 p-3 text-xs text-slate-500">
+          <div className="rounded-xl bg-cx-bg shadow-cx-inset-sm p-3 text-xs text-slate-500">
             <p>
               <span className="font-medium text-slate-700">Agent:</span> {agentName}
             </p>

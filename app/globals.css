@@ -3,18 +3,25 @@
 @tailwind utilities;
 
 :root {
-  /* Client X design tokens */
+  /* Client X design tokens — soft 3D / neumorphic language */
   --cx-purple: #7c3aed; /* AI / intelligence accents */
   --cx-purple-dark: #6d28d9;
   --cx-purple-light: #ede9fe;
   --cx-orange: #ff7a18; /* key actions only, used sparingly */
   --cx-orange-dark: #e56a0b;
   --cx-orange-light: #fff1e5;
-  --cx-bg: #f7f8fc;
-  --cx-panel: #ffffff;
-  --cx-border: rgba(226, 232, 240, 0.7);
-  --cx-shadow: 0 2px 16px rgba(17, 24, 39, 0.06);
-  --cx-shadow-hover: 0 6px 24px rgba(17, 24, 39, 0.09);
+  /* very light cool off-white page background */
+  --cx-bg: #e9edf4;
+  /* raised surfaces are slightly brighter than the background */
+  --cx-panel: #fbfcfe;
+  --cx-border: rgba(255, 255, 255, 0.65);
+  --cx-shadow-dark: rgba(163, 177, 198, 0.42);
+  --cx-shadow-light: rgba(255, 255, 255, 0.9);
+  --cx-shadow: 5px 5px 12px var(--cx-shadow-dark), -5px -5px 12px var(--cx-shadow-light);
+  --cx-shadow-hover: 8px 8px 20px rgba(163, 177, 198, 0.5),
+    -8px -8px 20px rgba(255, 255, 255, 0.95);
+  --cx-inset: inset 4px 4px 9px rgba(163, 177, 198, 0.42),
+    inset -4px -4px 9px rgba(255, 255, 255, 0.9);
   --cx-ink: #111827;
 }
 
@@ -33,6 +40,23 @@ body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* ---- Soft 3D helper surfaces ------------------------------------------
+   .cx-raised   → tactile raised card (same language as shadow-cx-card)
+   .cx-recessed → inset well for inputs / composer / wells
+   .cx-well     → deeper recessed panel (progress tracks, tab rails) */
+.cx-raised {
+  background: var(--cx-panel);
+  box-shadow: var(--cx-shadow), inset 1px 1px 1px rgba(255, 255, 255, 0.55);
+}
+.cx-recessed {
+  background: var(--cx-bg);
+  box-shadow: var(--cx-inset);
+}
+.cx-well {
+  background: #e2e7f0;
+  box-shadow: var(--cx-inset);
 }
 
 /* thin scrollbars */

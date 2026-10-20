@@ -64,7 +64,7 @@ export function MockQR({ payload, size = 200 }: { payload: string; size?: number
       width={size}
       height={size}
       viewBox={`0 0 ${total} ${total}`}
-      className="rounded-xl bg-white"
+      className="rounded-xl bg-cx-surface"
       role="img"
       aria-label="Mock pairing code"
     >

@@ -84,7 +84,7 @@ export default function ReferralsPage() {
             </div>
           </div>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <div className="flex flex-1 items-center gap-2 rounded-xl border border-slate-200/70 bg-white px-3 py-2.5">
+            <div className="flex flex-1 items-center gap-2 rounded-xl  bg-cx-surface px-3 py-2.5">
               <code className="flex-1 truncate text-sm font-medium text-slate-700">{link}</code>
               <Badge tone="purple">/{code || "······"}</Badge>
             </div>

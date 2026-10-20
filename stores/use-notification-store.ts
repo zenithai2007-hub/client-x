@@ -8,7 +8,7 @@ interface NotificationState {
   notifications: AppNotification[];
   loaded: boolean;
   load: () => Promise<void>;
-  push: (title: string, body: string, kind?: NotificationKind) => Promise<AppNotification>;
+  push: (title: string, body: string, kind?: NotificationKind, href?: string) => Promise<AppNotification>;
   markRead: (id: string) => Promise<void>;
   markAllRead: () => Promise<void>;
   unreadCount: () => number;
@@ -24,8 +24,8 @@ export const useNotificationStore = create<NotificationState>()((set, get) => ({
     set({ notifications, loaded: true });
   },
 
-  push: async (title, body, kind = "info") => {
-    const n = await notificationService.push(title, body, kind);
+  push: async (title, body, kind = "info", href) => {
+    const n = await notificationService.push(title, body, kind, href);
     set((s) => ({ notifications: [n, ...s.notifications] }));
     return n;
   },

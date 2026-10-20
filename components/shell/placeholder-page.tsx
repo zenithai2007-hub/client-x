@@ -23,7 +23,7 @@ export function PlaceholderPage({ title, hint }: { title: string; hint: string }
           <Button
             onClick={() => {
               setActiveNav("home");
-              router.push("/");
+              router.push("/home");
             }}
           >
             Back to Home

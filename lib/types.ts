@@ -156,6 +156,8 @@ export interface AppNotification {
   time: string; // ISO 8601
   read: boolean;
   kind: NotificationKind;
+  /** deep-link — clicking the notification opens this route */
+  href?: string;
 }
 
 export type ApprovalStatus = "pending" | "approved" | "cancelled";
@@ -305,4 +307,6 @@ export interface PlatformConnection {
   status: "connected" | "disconnected";
   handle?: string;
   connectedAt?: string; // ISO 8601
+  lastSyncedAt?: string; // ISO 8601 (mock)
+  messageCount?: number; // mock count shown on connected cards
 }

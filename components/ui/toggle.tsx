@@ -25,15 +25,15 @@ export function Toggle({
     >
       <span
         className={cn(
-          "relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors",
-          checked ? "bg-cx-purple" : "bg-slate-200"
+          "relative inline-flex h-6 w-11 shrink-0 rounded-full transition-all",
+          checked ? "bg-cx-purple shadow-cx-inset-sm" : "bg-[#D8DEE9] shadow-cx-inset-sm"
         )}
       >
         <motion.span
           layout
           transition={{ type: "spring", stiffness: 500, damping: 32 }}
           className={cn(
-            "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow",
+            "absolute top-0.5 h-5 w-5 rounded-full bg-cx-surface shadow-cx-raised-sm",
             checked ? "right-0.5" : "left-0.5"
           )}
         />

@@ -79,7 +79,7 @@ function TemplateCard({ tpl }: { tpl: CommunityTemplate }) {
           </span>
           <span className="text-xs text-slate-400">{formatUses(tpl.uses)} uses</span>
         </div>
-        <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+        <div className="mt-3 flex items-center justify-between border-t border-white/50 pt-3">
           <span className="text-[11px] text-slate-400">{timeAgo(tpl.createdAt)}</span>
           <Button size="sm" variant="primary-orange" onClick={apply} loading={applying}>
             Use this template

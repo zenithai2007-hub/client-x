@@ -51,7 +51,7 @@ export function DropdownMenu({
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: 0.12 }}
             className={cn(
-              "absolute z-50 mt-2 min-w-[180px] rounded-xl border border-slate-200/70 bg-white p-1.5 shadow-cx-pop",
+              "absolute z-50 mt-2 min-w-[180px] rounded-xl  bg-cx-surface p-1.5 shadow-cx-pop",
               align === "right" ? "right-0" : "left-0"
             )}
           >
@@ -64,7 +64,7 @@ export function DropdownMenu({
                 }}
                 className={cn(
                   "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
-                  item.danger ? "text-red-600 hover:bg-red-50" : "text-slate-700 hover:bg-slate-100"
+                  item.danger ? "text-red-600 hover:bg-red-50" : "text-slate-700 hover:bg-white/60"
                 )}
               >
                 {item.icon}

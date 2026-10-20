@@ -78,7 +78,7 @@ export function OAuthModal({
             </div>
           </div>
 
-          <div className="mt-4 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5">
+          <div className="mt-4 rounded-2xl  bg-cx-bg shadow-cx-inset-sm/60 p-3.5">
             <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-700">
               <ShieldCheck size={14} className="text-cx-purple" />
               Client X is requesting permission to:

@@ -8,7 +8,7 @@ import { useUIStore } from "@/stores/use-ui-store";
 import { cn } from "@/lib/cn";
 
 const ITEMS = [
-  { label: "Home", href: "/", icon: Home },
+  { label: "Home", href: "/home", icon: Home },
   { label: "Chats", href: "/chats", icon: MessageSquare },
   { label: "Outreach", href: "/outreach", icon: Megaphone },
   { label: "Tasks", href: "/tasks", icon: ListTodo },
@@ -24,14 +24,14 @@ export function MobileNav() {
       {/* floating menu button for the drawer (mobile only) */}
       <button
         onClick={() => setMobileNavOpen(true)}
-        className="fixed left-4 top-3 z-40 flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/70 bg-white text-slate-600 shadow-cx-card lg:hidden"
+        className="fixed left-4 top-3 z-40 flex h-10 w-10 items-center justify-center rounded-xl  bg-cx-surface text-slate-600 shadow-cx-card lg:hidden"
         aria-label="Open menu"
       >
         <Menu size={18} />
       </button>
 
-      {/* bottom bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/70 bg-white/95 backdrop-blur lg:hidden">
+      {/* bottom bar — soft raised floating container */}
+      <nav className="fixed bottom-3 left-3 right-3 z-40 rounded-3xl bg-cx-surface shadow-cx-pop lg:hidden">
         <div className="grid grid-cols-6 px-2 py-1.5">
           {ITEMS.map(({ label, href, icon: Icon }) => {
             const active = pathname === href;
@@ -40,8 +40,10 @@ export function MobileNav() {
                 key={href}
                 href={href}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-medium",
-                  active ? "text-cx-purple" : "text-slate-400"
+                  "flex flex-col items-center gap-0.5 rounded-2xl py-1.5 text-[10px] font-medium transition-all",
+                  active
+                    ? "bg-cx-purpleLight text-cx-purpleDark shadow-cx-raised-sm"
+                    : "text-slate-400"
                 )}
               >
                 <Icon size={20} />
@@ -52,8 +54,10 @@ export function MobileNav() {
           <button
             onClick={toggleRightPanel}
             className={cn(
-              "flex flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-medium",
-              rightPanelOpen ? "text-cx-purple" : "text-slate-400"
+              "flex flex-col items-center gap-0.5 rounded-2xl py-1.5 text-[10px] font-medium transition-all",
+              rightPanelOpen
+                ? "bg-cx-purpleLight text-cx-purpleDark shadow-cx-raised-sm"
+                : "text-slate-400"
             )}
             aria-label="Toggle agent panel"
           >
@@ -61,7 +65,6 @@ export function MobileNav() {
             Agent
           </button>
         </div>
-        <div className="h-[env(safe-area-inset-bottom)]" />
       </nav>
     </>
   );
@@ -77,7 +80,7 @@ export function MobileAgentSheet({ children }: { children: ReactNode }) {
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       <div className="absolute inset-0 bg-slate-900/40" onClick={toggleRightPanel} />
-      <div className="absolute bottom-0 left-0 right-0 max-h-[75vh] overflow-y-auto rounded-t-3xl bg-white p-4 pb-24 shadow-cx-pop cx-fade-in">
+      <div className="absolute bottom-0 left-0 right-0 max-h-[75vh] overflow-y-auto rounded-t-3xl bg-cx-surface p-4 pb-24 shadow-cx-pop cx-fade-in">
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-slate-200" />
         {children}
       </div>

@@ -50,14 +50,14 @@ export function ChatList({ onOpenThread }: { onOpenThread: () => void }) {
   };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-cx-card">
-      <div className="border-b border-slate-100 px-3 pb-3 pt-3">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl  bg-cx-surface shadow-cx-card">
+      <div className="border-b border-white/50 px-3 pb-3 pt-3">
         <div className="mb-2.5 flex items-center justify-between px-1">
           <h2 className="text-sm font-semibold text-slate-900">Chats</h2>
           <Tooltip tip="Mark all as read">
             <button
               onClick={() => void markAllRead()}
-              className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+              className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white/60 hover:text-slate-600"
               aria-label="Mark all as read"
             >
               <CheckCheck size={16} />
@@ -127,8 +127,8 @@ export function ChatList({ onOpenThread }: { onOpenThread: () => void }) {
                     className={cn(
                       "flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-left transition-colors",
                       active
-                        ? "bg-white shadow-cx-card ring-1 ring-slate-200/70"
-                        : "hover:bg-slate-50"
+                        ? "bg-cx-surface shadow-cx-card ring-1 ring-slate-200/70"
+                        : "hover:bg-cx-bg shadow-cx-inset-sm"
                     )}
                   >
                     <Avatar name={c.name} color={c.avatarColor} online={c.online} />
@@ -163,7 +163,7 @@ export function ChatList({ onOpenThread }: { onOpenThread: () => void }) {
         )}
       </div>
 
-      <div className="border-t border-slate-100 p-3">
+      <div className="border-t border-white/50 p-3">
         <Button
           variant="secondary"
           size="md"

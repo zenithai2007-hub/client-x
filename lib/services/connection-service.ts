@@ -108,7 +108,14 @@ class ConnectionService {
     await jitter(200, 500);
     this.state = this.state.map((c) =>
       c.platformId === platformId
-        ? { platformId, status: "disconnected" as const, handle: undefined, connectedAt: undefined }
+        ? {
+            platformId,
+            status: "disconnected" as const,
+            handle: undefined,
+            connectedAt: undefined,
+            lastSyncedAt: undefined,
+            messageCount: undefined,
+          }
         : c
     );
     const c = this.state.find((x) => x.platformId === platformId)!;
@@ -127,9 +134,25 @@ class ConnectionService {
   }
 
   private setConnected(platformId: string, handle: string): PlatformConnection {
+    // Deterministic mock sync stats per platform (display only).
+    const MOCK_MESSAGES: Record<string, number> = {
+      whatsapp: 1284,
+      instagram: 342,
+      linkedin: 96,
+      x: 57,
+      telegram: 418,
+      facebook: 203,
+    };
     this.state = this.state.map((c) =>
       c.platformId === platformId
-        ? { platformId, status: "connected" as const, handle, connectedAt: nowISO() }
+        ? {
+            platformId,
+            status: "connected" as const,
+            handle,
+            connectedAt: nowISO(),
+            lastSyncedAt: nowISO(),
+            messageCount: MOCK_MESSAGES[platformId] ?? 0,
+          }
         : c
     );
     const c = this.state.find((x) => x.platformId === platformId)!;

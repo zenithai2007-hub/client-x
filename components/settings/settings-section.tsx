@@ -58,4 +58,4 @@ export function SettingRow({
 }
 
 export const selectCls =
-  "h-10 rounded-xl border border-slate-200/70 bg-white px-3 text-sm text-slate-700 shadow-sm focus:border-cx-purple focus:outline-none";
+  "h-10 rounded-xl  bg-cx-surface px-3 text-sm text-slate-700 shadow-sm focus:border-cx-purple focus:outline-none";

@@ -46,7 +46,7 @@ export function NewTaskModal({ open, onClose }: { open: boolean; onClose: () => 
           <select
             value={agentId}
             onChange={(e) => setAgentId(e.target.value)}
-            className="w-full rounded-xl border border-slate-200/70 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition-colors focus:border-cx-purple focus:outline-none focus:ring-2 focus:ring-cx-purple/15"
+            className="w-full rounded-xl  bg-cx-surface px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition-colors focus:border-cx-purple focus:outline-none focus:ring-2 focus:ring-cx-purple/15"
           >
             {agents.map((a) => (
               <option key={a.id} value={a.id}>

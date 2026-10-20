@@ -250,7 +250,7 @@ export default function SettingsPage() {
                 return (
                   <div
                     key={a.id}
-                    className="flex items-center justify-between rounded-xl border border-slate-200/70 bg-slate-50/50 px-3.5 py-2.5"
+                    className="flex items-center justify-between rounded-xl  bg-cx-bg shadow-cx-inset-sm/50 px-3.5 py-2.5"
                   >
                     <div>
                       <p className="text-sm font-medium text-slate-800">{a.name}</p>

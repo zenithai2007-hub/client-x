@@ -41,7 +41,7 @@ export function CampaignList({ onNew }: { onNew: () => void }) {
                   "w-full rounded-xl border p-3 text-left transition-colors",
                   isActive
                     ? "border-cx-purple/40 bg-cx-purpleLight/40"
-                    : "border-slate-100 hover:border-slate-200 hover:bg-slate-50"
+                    : "border-white/50 hover:border-white/50 hover:bg-cx-bg shadow-cx-inset-sm"
                 )}
               >
                 <div className="flex items-center justify-between gap-2">

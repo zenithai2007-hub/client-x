@@ -95,13 +95,13 @@ export function Composer({
   };
 
   return (
-    <div className="border-t border-slate-200/70 bg-white/90 px-3 pb-3 pt-2 backdrop-blur">
+    <div className="border-t border-white/60 bg-cx-surface/90 px-3 pb-3 pt-2 backdrop-blur">
       {attachments.length > 0 && (
         <div className="mb-2 flex flex-wrap gap-1.5">
           {attachments.map((a, i) => (
             <span
               key={`${a}-${i}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/70 bg-slate-50 py-1 pl-2.5 pr-1.5 text-xs text-slate-600"
+              className="inline-flex items-center gap-1.5 rounded-full  bg-cx-bg shadow-cx-inset-sm py-1 pl-2.5 pr-1.5 text-xs text-slate-600"
             >
               <Paperclip size={12} className="text-slate-400" />
               <span className="font-medium">{a}</span>
@@ -145,7 +145,7 @@ export function Composer({
           align="left"
           trigger={
             <Tooltip tip="Attach (demo mock)">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-white/60 hover:text-slate-700">
                 <Plus size={18} />
               </span>
             </Tooltip>

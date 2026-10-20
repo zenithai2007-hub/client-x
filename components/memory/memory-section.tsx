@@ -123,7 +123,7 @@ export function MemorySection({
               <motion.div
                 key={item.id}
                 layout
-                className="rounded-xl border border-slate-200/70 bg-slate-50/50 px-3.5 py-3"
+                className="rounded-xl  bg-cx-bg shadow-cx-inset-sm/50 px-3.5 py-3"
               >
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-semibold text-slate-900">{item.key}</p>
@@ -141,7 +141,7 @@ export function MemorySection({
                         <button
                           onClick={() => setEditingId(null)}
                           aria-label="Cancel"
-                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-white/60"
                         >
                           <X size={15} />
                         </button>
@@ -151,7 +151,7 @@ export function MemorySection({
                         <button
                           onClick={() => startEdit(item)}
                           aria-label="Edit"
-                          className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-white/60 hover:text-slate-600"
                         >
                           <Pencil size={15} />
                         </button>

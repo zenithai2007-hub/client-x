@@ -21,7 +21,7 @@ export function Tabs({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-center gap-1 rounded-xl bg-slate-100/80 p-1", className)}>
+    <div className={cn("flex items-center gap-1 rounded-2xl bg-[#E2E7F0] p-1.5 shadow-cx-inset-sm", className)}>
       {tabs.map((t) => {
         const isActive = t.key === active;
         return (
@@ -36,7 +36,7 @@ export function Tabs({
             {isActive && (
               <motion.span
                 layoutId="cx-tab-pill"
-                className="absolute inset-0 rounded-lg bg-white shadow-cx-card"
+                className="absolute inset-0 rounded-xl bg-cx-surface shadow-cx-raised-sm"
                 transition={{ type: "spring", stiffness: 500, damping: 40 }}
               />
             )}

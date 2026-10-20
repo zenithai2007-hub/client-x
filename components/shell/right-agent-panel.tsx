@@ -54,7 +54,7 @@ export function AgentPanelCard() {
           </div>
           <button
             onClick={toggleRightPanel}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100"
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-white/60"
             aria-label="Close panel"
           >
             <X size={16} />
@@ -176,12 +176,12 @@ export function AgentPanelCard() {
             <p className="py-6 text-center text-sm text-slate-400">No pending approvals.</p>
           )}
           {pending.map((a) => (
-            <div key={a.id} className="rounded-xl border border-slate-200/70 p-3">
+            <div key={a.id} className="rounded-xl  p-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-sm font-semibold text-slate-800">{a.target}</p>
                 <Badge tone="purple">{a.action}</Badge>
               </div>
-              <p className="mt-1.5 rounded-lg bg-slate-50 p-2 text-xs text-slate-600">{a.message}</p>
+              <p className="mt-1.5 rounded-lg bg-cx-bg shadow-cx-inset-sm p-2 text-xs text-slate-600">{a.message}</p>
               <div className="mt-2.5 flex gap-2">
                 <Button
                   size="sm"
@@ -217,7 +217,7 @@ export function RightAgentPanel() {
     return (
       <button
         onClick={toggleRightPanel}
-        className="fixed right-4 top-20 z-40 hidden h-10 w-10 items-center justify-center rounded-xl border border-slate-200/70 bg-white text-slate-500 shadow-cx-card hover:text-slate-700 lg:flex"
+        className="fixed right-4 top-20 z-40 hidden h-10 w-10 items-center justify-center rounded-xl  bg-cx-surface text-slate-500 shadow-cx-card hover:text-slate-700 lg:flex"
         aria-label="Open agent panel"
       >
         <Bot size={18} />
@@ -225,7 +225,7 @@ export function RightAgentPanel() {
     );
   }
   return (
-    <aside className="sticky top-0 hidden h-screen w-80 shrink-0 overflow-y-auto border-l border-slate-200/70 bg-white/60 p-4 lg:block">
+    <aside className="sticky top-0 hidden h-screen w-80 shrink-0 overflow-y-auto border-l border-white/60 bg-cx-surface/60 p-4 lg:block">
       <AgentPanelCard />
     </aside>
   );

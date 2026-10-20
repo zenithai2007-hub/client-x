@@ -13,7 +13,7 @@ export default function InvitePage({ params }: { params: { code: string } }) {
   const code = params.code?.toUpperCase() ?? "CLIENTX";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F7F8FC] p-4">
+    <div className="flex min-h-screen items-center justify-center bg-[#E9EDF4] p-4">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

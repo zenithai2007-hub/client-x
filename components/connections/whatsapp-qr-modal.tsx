@@ -98,7 +98,7 @@ export function WhatsAppQRModal({
     }
     return (
       <div className="flex flex-col items-center text-center">
-        <div className="relative rounded-2xl border border-slate-200/70 bg-white p-3 shadow-cx-card">
+        <div className="relative rounded-2xl  bg-cx-surface p-3 shadow-cx-card">
           {payload && <MockQR payload={payload} size={200} />}
         </div>
         <ol className="mt-4 space-y-1.5 text-left text-[13px] text-slate-600">

@@ -236,7 +236,7 @@ function TargetRow({ campaign, target }: { campaign: Campaign; target: Target })
         <StepChecklist target={target} />
 
         {target.message && target.state !== "waiting" && target.state !== "searching" && (
-          <p className="mt-3 line-clamp-2 rounded-xl bg-slate-50 p-2.5 text-xs italic text-slate-500">
+          <p className="mt-3 line-clamp-2 rounded-xl bg-cx-bg shadow-cx-inset-sm p-2.5 text-xs italic text-slate-500">
             “{target.message}”
           </p>
         )}

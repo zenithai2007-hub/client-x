@@ -33,7 +33,7 @@ export function Avatar({
     <span className={cn("relative inline-flex shrink-0", className)}>
       <span
         className={cn(
-          "inline-flex items-center justify-center rounded-full font-semibold text-white",
+          "inline-flex items-center justify-center rounded-full font-semibold text-white shadow-cx-raised-sm",
           sizes[size]
         )}
         style={{ backgroundColor: color }}

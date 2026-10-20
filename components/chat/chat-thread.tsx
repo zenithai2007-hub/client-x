@@ -115,9 +115,9 @@ export function ChatThread({
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-cx-card">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl  bg-cx-surface shadow-cx-card">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-slate-100 px-3 py-2.5 sm:px-4">
+      <div className="flex items-center gap-3 border-b border-white/50 px-3 py-2.5 sm:px-4">
         <Button
           variant="ghost"
           size="icon"
@@ -144,7 +144,7 @@ export function ChatThread({
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-slate-50/60 px-3 py-4 sm:px-5">
+      <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-cx-bg shadow-cx-inset-sm/60 px-3 py-4 sm:px-5">
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cx-purpleLight text-cx-purple">
@@ -160,7 +160,7 @@ export function ChatThread({
             <Fragment key={m.id}>
               {(i === 0 || !isSameDay(messages[i - 1].time, m.time)) && (
                 <div className="flex justify-center py-1">
-                  <span className="rounded-full bg-white px-3 py-1 text-[11px] font-medium text-slate-500 shadow-cx-card ring-1 ring-slate-200/60">
+                  <span className="rounded-full bg-cx-surface px-3 py-1 text-[11px] font-medium text-slate-500 shadow-cx-card ring-1 ring-slate-200/60">
                     {formatDayLabel(m.time)}
                   </span>
                 </div>
@@ -181,7 +181,7 @@ export function ChatThread({
       {/* Generated card */}
       <AnimatePresence>
         {(gen || genLoading) && gen && (
-          <div className="border-t border-slate-100 px-3 pt-2">
+          <div className="border-t border-white/50 px-3 pt-2">
             <GeneratedCard
               kindLabel={gen.kindLabel}
               text={gen.text}

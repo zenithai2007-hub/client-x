@@ -80,7 +80,7 @@ function ShareContent({ kind, id }: { kind: ShareKind; id: string }) {
           This shared item couldn't be found. It may have been removed.
         </p>
       ) : (
-        <div className="mt-3 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4">
+        <div className="mt-3 rounded-2xl  bg-cx-bg shadow-cx-inset-sm/60 p-4">
           {kind === "output" && <Quote size={16} className="mb-2 text-cx-purple" />}
           <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-700">{body}</p>
         </div>
@@ -97,7 +97,7 @@ function ShareContent({ kind, id }: { kind: ShareKind; id: string }) {
 
 export default function SharePage({ params }: { params: { kind: ShareKind; id: string } }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F7F8FC] p-4">
+    <div className="flex min-h-screen items-center justify-center bg-[#E9EDF4] p-4">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

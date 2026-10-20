@@ -106,7 +106,7 @@ export function SecuritySection() {
           {sessions.map((s) => (
             <div
               key={s.id}
-              className="flex items-center justify-between rounded-xl border border-slate-200/70 bg-slate-50/50 px-3.5 py-2.5"
+              className="flex items-center justify-between rounded-xl  bg-cx-bg shadow-cx-inset-sm/50 px-3.5 py-2.5"
             >
               <div className="flex items-center gap-2.5">
                 <MonitorSmartphone size={16} className="text-slate-400" />
@@ -146,7 +146,7 @@ export function SecuritySection() {
           {devices.map((d) => (
             <div
               key={d.id}
-              className="flex items-center justify-between rounded-xl border border-slate-200/70 bg-slate-50/50 px-3.5 py-2.5"
+              className="flex items-center justify-between rounded-xl  bg-cx-bg shadow-cx-inset-sm/50 px-3.5 py-2.5"
             >
               <div className="flex items-center gap-2.5">
                 <Laptop size={16} className="text-slate-400" />

@@ -18,14 +18,16 @@ interface ButtonProps
   icon?: ReactNode;
 }
 
+/* Tactile soft-3D buttons: raised surfaces that feel physical.
+   Press = framer whileTap scale + active: inset shadow (see variants). */
 const variants: Record<Variant, string> = {
   // orange is reserved for KEY actions only — use sparingly
   "primary-orange":
-    "bg-cx-orange text-white hover:bg-cx-orangeDark shadow-[0_2px_12px_rgba(255,122,24,0.35)]",
+    "bg-cx-orange text-white hover:bg-cx-orangeDark shadow-[4px_4px_10px_rgba(255,122,24,0.35),-2px_-2px_8px_rgba(255,255,255,0.6)] active:shadow-cx-btn-press",
   secondary:
-    "bg-white text-slate-700 border border-slate-200/70 hover:border-slate-300 hover:bg-slate-50 shadow-cx-card",
-  ghost: "text-slate-600 hover:bg-slate-100",
-  danger: "bg-red-600 text-white hover:bg-red-700",
+    "bg-cx-surface text-slate-700 shadow-cx-btn hover:text-slate-900 active:shadow-cx-btn-press",
+  ghost: "text-slate-600 hover:bg-cx-surface/60 hover:shadow-cx-raised-sm active:shadow-cx-btn-press",
+  danger: "bg-red-500 text-white hover:bg-red-600 shadow-[4px_4px_10px_rgba(239,68,68,0.3)] active:shadow-cx-btn-press",
 };
 
 const sizes: Record<Size, string> = {
@@ -51,7 +53,7 @@ export function Button({
       transition={{ type: "spring", stiffness: 500, damping: 30 }}
       disabled={disabled || loading}
       className={cn(
-        "inline-flex items-center justify-center rounded-xl font-medium transition-colors",
+        "inline-flex items-center justify-center rounded-xl font-medium transition-shadow",
         "disabled:opacity-50 disabled:pointer-events-none select-none",
         variants[variant],
         sizes[size],

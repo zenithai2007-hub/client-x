@@ -150,7 +150,7 @@ export default function HistoryPage() {
   }, [rows, query, agentFilter, statusFilter]);
 
   const selectCls =
-    "h-10 rounded-xl border border-slate-200/70 bg-white px-3 text-sm text-slate-700 shadow-sm focus:border-cx-purple focus:outline-none";
+    "h-10 rounded-xl  bg-cx-surface px-3 text-sm text-slate-700 shadow-sm focus:border-cx-purple focus:outline-none";
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-5">
@@ -218,7 +218,7 @@ export default function HistoryPage() {
                 >
                   <button
                     onClick={() => router.push(r.route)}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-slate-50/80"
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-cx-bg shadow-cx-inset-sm/80"
                   >
                     <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", r.chip)}>
                       <Icon size={16} />

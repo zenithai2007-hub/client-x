@@ -17,7 +17,7 @@ const MESSAGE_STYLES = [
 ];
 
 const selectClass =
-  "w-full rounded-xl border border-slate-200/70 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition-colors focus:border-cx-purple focus:outline-none focus:ring-2 focus:ring-cx-purple/15";
+  "w-full rounded-xl  bg-cx-surface px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition-colors focus:border-cx-purple focus:outline-none focus:ring-2 focus:ring-cx-purple/15";
 
 export interface BuilderInitial {
   name?: string;

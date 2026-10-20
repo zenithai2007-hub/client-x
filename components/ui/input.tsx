@@ -1,8 +1,9 @@
 import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
+/* Recessed soft-3D field: sits IN the surface (inset shadows), brightens on focus. */
 const fieldBase =
-  "w-full rounded-xl border border-slate-200/70 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition-colors focus:border-cx-purple focus:outline-none focus:ring-2 focus:ring-cx-purple/15";
+  "w-full rounded-xl bg-cx-bg px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 shadow-cx-inset transition-shadow focus:bg-[#F2F4F9] focus:outline-none focus:ring-2 focus:ring-cx-purple/25";
 
 export function Input({
   className,
